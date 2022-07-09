@@ -64,24 +64,40 @@ class UserModel extends DB {
     }
   }
 
-  async getFriend(idCurrentUser, quantity){
+  async getFriend(idCurrentUser, page, quantity){
     try{
-      const result = {}
-      result.friendOfQuery = await this.select(`list_friend_${idCurrentUser}`, "*", `Limit ${quantity} `)
-      result.count = (await this.select(`list_friend_${idCurrentUser}`, "Count(*) as count"))[0].count
-      return result
+      const friendOfQuery = await this.select(`list_friend_${idCurrentUser}`, "*", `Limit ${page*quantity}, ${quantity}`)
+      return {friendOfQuery}
     } catch(e){
       console.log(e)
       throw e.message
     }
   }
 
-  async getRequest(idCurrentUser, quantity){
+  async getQuantityFriend(idCurrentUser){
     try{
-      const result = {}
-      result.requestOfQuery = await this.select(`mail_request_${idCurrentUser}`, "*", `Limit ${quantity} `)
-      result.count = (await this.select(`mail_request_${idCurrentUser}`, "Count(*) as count"))[0].count
-      return result
+      const quantity = (await this.select(`list_friend_${idCurrentUser}`, "Count(*) as count"))[0].count
+      return quantity
+    } catch(e){
+      console.log(e)
+      throw e.message
+    }
+  }
+
+  async getRequest(idCurrentUser, page, quantity){
+    try{
+      const requestOfQuery = await this.select(`mail_request_${idCurrentUser}`, "*", `Limit ${page*quantity}, ${quantity} `)
+      return {requestOfQuery}
+    } catch(e){
+      console.log(e)
+      throw e.message
+    }
+  }
+
+  async getQuantityRequest(idCurrentUser){
+    try{
+      const quantity = (await this.select(`mail_request_${idCurrentUser}`, "Count(*) as count"))[0].count
+      return quantity
     } catch(e){
       console.log(e)
       throw e.message
