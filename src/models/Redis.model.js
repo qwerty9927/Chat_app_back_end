@@ -25,6 +25,17 @@ class Redis{
       return false
     }
   }
+  async delKey(key){
+    try{
+      this.connect()
+      await this.client.del(`${key}`)
+      console.log("Del success!")
+      return true
+    }catch(err){
+      console.log("Del failed!", err.message)
+      return false
+    }
+  }
 }
 
 module.exports = new Redis()

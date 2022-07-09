@@ -10,6 +10,18 @@ module.exports = class DB {
     this.con = mysql.createConnection(config)
   }
 
+  excuseQuery(sql){
+    return new Promise((resolve, reject) => {
+      this.con.query(sql, (err, data) => {
+        console.log(sql)
+        if(err){
+          reject(err)
+        }
+        resolve(data)
+      })
+    })
+  }
+
   select(table, select = '*', where = ''){
     return new Promise((resolve, reject) => {
       let sql = `SELECT ${select} FROM ${table} ${where}`

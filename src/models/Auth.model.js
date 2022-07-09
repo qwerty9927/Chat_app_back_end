@@ -16,7 +16,7 @@ class AuthModel extends DB{
         const match = await bcrypt.compare(password, i.Password)
         // console.log(match)
         if(match){
-          return { status: true, role: i.Role }
+          return { status: true, role: i.Role, name: i.Name, image: i.Image }
         }
       }
       return { status: false }
@@ -44,9 +44,9 @@ class AuthModel extends DB{
     data.Status = 1
     data.Role = 2
     if(await this.insert("account", data)){
-      return { status: true, role: data.Role, id: data.idUser }
+      return true
     }
-    return { status: false }
+    return false
   }
 
   async setToken(key, value){
@@ -55,6 +55,10 @@ class AuthModel extends DB{
 
   async getToken(key){
     return await Redis.getValue(key)
+  }
+
+  async delToken(key){
+    return await Redis.delKey(key)
   }
 }
 
