@@ -7,8 +7,8 @@ const { Server } = require('socket.io')
 const routerAuth = require('./src/routes/auth.route')
 const routerAdmin = require('./src/routes/admin.route')
 const routerUser = require('./src/routes/user.route')
-const routerChat = require('./src/routes/chat.route')
 const routerSearch = require('./src/routes/search.route')
+const routerChat = require('./src/routes/chat.route')
 const ServiceChat = require('./src/services/Chat.service')
 const verifyToken = require('./src/middleware/verifyToken')
 
@@ -16,7 +16,11 @@ dotenv.config()
 const app = express()
 const httpServer = http.createServer(app)
 const PORT = process.env.PORT || 5000
-const io = new Server(httpServer, {})
+const io = new Server(httpServer, {
+  cors: {
+    origin: "http://localhost:3000"
+  }
+})
 global.__basedir = __dirname
 global._io = io
 
@@ -30,7 +34,6 @@ app.use(cookieParser())
 app.use('/auth', routerAuth)
 app.use(verifyToken) //middleware check token is exist
 app.use('/chat', routerChat)
-
 global._io.on("connection", ServiceChat.connect)
 
 app.use('/admin', routerAdmin)

@@ -2,7 +2,7 @@ const SearchModel = require('../models/Search.model')
 class Search{
 
   async searchUserToChat(req, res){
-    const idCurrentUser = req.query.idCurrentUser
+    const idCurrentUser = req.username
     const searchValue = req.query.searchValue
     const page = req.query.page
     const quantity = req.query.quantity
@@ -15,7 +15,7 @@ class Search{
   }
 
   async quantityUserToChatFound(req, res){
-    const idCurrentUser = req.query.username
+    const idCurrentUser = req.username
     const searchValue = req.query.searchValue
     try{
       const result = await SearchModel.quantityUserToChat(idCurrentUser, searchValue)
@@ -26,11 +26,12 @@ class Search{
   }
 
   async searchUserToAdd(req, res){
-    const idCurrentUser = req.query.idCurrentUser
+    const idCurrentUser = req.username
     const searchValue = req.query.searchValue
+    const page = req.query.page
     const quantity = req.query.quantity
     try{
-      const result = await SearchModel.findUserToAdd(idCurrentUser, searchValue, quantity)
+      const result = await SearchModel.findUserToAdd(idCurrentUser, searchValue, page, quantity)
       res.status(200).json(result)
     }catch(e){
       res.sendStatus(500)
@@ -38,7 +39,7 @@ class Search{
   }
 
   async quantityUserToAddFound(req, res){
-    const idCurrentUser = req.query.username
+    const idCurrentUser = req.username
     const searchValue = req.query.searchValue
     try{
       const result = await SearchModel.quantityUserToAdd(idCurrentUser, searchValue)
@@ -49,11 +50,12 @@ class Search{
   }
 
   async searchUserInRequestBox(req, res){
-    const idCurrentUser = req.query.idCurrentUser
+    const idCurrentUser = req.username
     const searchValue = req.query.searchValue
+    const page = req.query.page
     const quantity = req.query.quantity
     try{
-      const result = await SearchModel.findUserInRequestBox(idCurrentUser, searchValue, quantity)
+      const result = await SearchModel.findUserInRequestBox(idCurrentUser, searchValue, page, quantity)
       res.status(200).json(result)
     }catch(e){
       res.sendStatus(500)
@@ -61,7 +63,7 @@ class Search{
   }
 
   async quantityRequestFound(req, res){
-    const idCurrentUser = req.query.username
+    const idCurrentUser = req.username
     const searchValue = req.query.searchValue
     try{
       const result = await SearchModel.quantityRequest(idCurrentUser, searchValue)

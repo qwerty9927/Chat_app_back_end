@@ -4,6 +4,7 @@ function verifyToken(req, res, next) {
     const [schema, token] = req.headers.authorization.split(' ')
     jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, data) => {
       if(data){
+        req.username = data.username
         next()
       } else {
         res.sendStatus(401)

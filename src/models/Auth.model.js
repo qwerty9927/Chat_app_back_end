@@ -16,7 +16,7 @@ class AuthModel extends DB{
         const match = await bcrypt.compare(password, i.Password)
         // console.log(match)
         if(match){
-          return { status: true, role: i.Role, name: i.Name, image: i.Image }
+          return { status: true, role: i.Role, Name: i.Name, Image: i.Image }
         }
       }
       return { status: false }

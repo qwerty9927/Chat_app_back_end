@@ -2,6 +2,7 @@ const express = require('express')
 const Chat = require('../controllers/Chat.controller')
 const router = express.Router()
 
-router.get('/', Chat.chatPage)
+// Get message của tài khoản
+router.get('/message', Chat.checkRoom, Chat.getMessage) 
 
 module.exports = router

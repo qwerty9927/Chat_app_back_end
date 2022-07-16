@@ -1,16 +1,23 @@
+const ChatModel = require("../models/Chat.model")
 
 class ServiceChat{
   connect(socket){
     console.log("connect to chat")
-    socket.emit("message", "connecting")
-    socket.on("disconnect", () => {
-      console.log("Disconnect")
+    socket.on("entryRoom", (data) => {
+      socket.join("room-" + data.idRoom) 
     })
 
-    socket.on('chat message', (data) => {
-      console.log(data)
-      _io.emit('chat message', data)
+    socket.on("sendMessage", async (data) => {
+      try{
+        await ChatModel.addMessage(data.idRoom, data.messageInfo)
+        socket.to("room-" + data.idRoom).emit("receiveMessage", data.messageInfo)
+      } catch(e){
+        console.log(e)
+      }
+    })
 
+    socket.on("disconnect", () => {
+      console.log("Disconnect")
     })
   }
 }

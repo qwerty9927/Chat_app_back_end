@@ -4,7 +4,7 @@ const UserModel = require('../models/User.model')
 class User {
 
   async getListRequest(req, res){
-    const idCurrentUser = req.query.username
+    const idCurrentUser = req.username
     const page = req.query.page
     const quantity = req.query.quantity
     try{
@@ -17,7 +17,7 @@ class User {
   }
 
   async getQuantityListRequest(req, res){
-    const idCurrentUser = req.query.username
+    const idCurrentUser = req.username
     try{
       const result = await UserModel.getQuantityRequest(idCurrentUser)
       res.status(200).json(result)
@@ -28,7 +28,7 @@ class User {
   }
 
   async getListFriend(req, res){
-    const idCurrentUser = req.query.username
+    const idCurrentUser = req.username
     const page = req.query.page
     const quantity = req.query.quantity
     if(idCurrentUser && quantity && page){
@@ -45,7 +45,7 @@ class User {
   }
 
   async getQuantityListFriend(req, res){
-    const idCurrentUser = req.query.username
+    const idCurrentUser = req.username
     if(idCurrentUser){
       try{
         const result = await UserModel.getQuantityFriend(idCurrentUser)
@@ -61,9 +61,11 @@ class User {
 
   async postRequest(req, res){
     const data = req.body
+    // Bảo vệ route xác thực đúng username
+    data.mySelf.Username = req.username
     try{
-      await UserModel.addRequestToFriend(data.friend.idOfFriend, data.mySelf)
-      await UserModel.addRequestToLog(data.friend.idOfFriend, data.mySelf.idMySelf)
+      await UserModel.addRequestToFriend(data.mySelf, data.friend.Username)
+      await UserModel.addRequestToLog(data.mySelf.Username, data.friend.Username)
       res.sendStatus(200)
     } catch(e){
       res.sendStatus(500)
@@ -72,10 +74,14 @@ class User {
 
   async addFriend(req, res){
     const data = req.body
-    const idRoom = uuidv4()
+    const idRoom = uuidv4().replace(/-/g, "")
+    // Bảo vệ route xác thực đúng username
+    data.mySelf.Username = req.username
     try{
-      await UserModel.addFriendToMyListFriend(data.mySelf.idMySelf, data.friend, idRoom)
-      await UserModel.addFriendToYourListFriend(data.friend.idOfFriend, data.mySelf, idRoom)
+      await UserModel.addFriendToMyListFriend(data.mySelf.Username, data.friend, idRoom)
+      await UserModel.addFriendToYourListFriend(data.mySelf, data.friend.Username, idRoom)
+      await UserModel.deleteRequestLogOfFriend(data.mySelf.Username, data.friend.Username)
+      await UserModel.deleteMailRequestOfUser(data.mySelf.Username, data.friend.Username)
       await UserModel.createRoom(idRoom)
       res.sendStatus(200)
     } catch(e){
@@ -84,11 +90,11 @@ class User {
   }
 
   async refuseRequest(req, res){
-    const idCurrentUser = req.query.username
+    const idCurrentUser = req.username
     const idRefuse = req.query.idRefuse
     try {
-      await UserModel.deleteRequestInMail(idCurrentUser, idRefuse)
-      await UserModel.deleteInRequestLog(idRefuse, idCurrentUser)
+      await UserModel.deleteMailRequestOfUser(idCurrentUser, idRefuse)
+      await UserModel.deleteRequestLogOfFriend(idCurrentUser, idRefuse)
       res.sendStatus(200)
     } catch(e){
       res.sendStatus(500)

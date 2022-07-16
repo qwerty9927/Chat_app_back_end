@@ -6,6 +6,7 @@ class Auth {
   async login(req, res) {
     if (typeof req.body.Username !== 'undefined' && typeof req.body.Password !== 'undefined') {
       const username = req.body.Username
+      console.log(username)
       const result = await AuthModel.checkAcc(req.body)
       if (result.status) {
         const accessToken = jwt.sign({ username: username, role: result.role }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 60*10 })
@@ -13,7 +14,7 @@ class Auth {
         if(await AuthModel.setToken(username, refreshToken)){
           res.cookie("accessToken", accessToken)
           res.cookie("refreshToken", refreshToken)
-          res.status(200).json({ username: username, name: result.name, image: result.image})
+          res.status(200).json({ Username: username, Name: result.Name, Image: result.Image})
         } else {
           res.status(500).send("Error")
         }
@@ -72,13 +73,13 @@ class Auth {
 
   refreshToken(req, res) {
     const token = req.cookies.refreshToken
-    console.log(token)
+    console.log("RefreshToke: ", token)
     if (token !== undefined) {
       jwt.verify(token, process.env.REFRESH_ACCESS_TOKEN_SECRET, async (err, data) => {
         if (data) {
           const refreshTokenInStore = await AuthModel.getToken(data.username)
           if(refreshTokenInStore.result === token){
-            const accessToken = jwt.sign({ username: data.Username, role: data.role }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 60*10 })
+            const accessToken = jwt.sign({ username: data.username, role: data.role }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 60*10 })
             res.cookie("accessToken", accessToken)
             res.status(200).send("Success")
           } else {
