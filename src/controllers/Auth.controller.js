@@ -1,12 +1,12 @@
 const jwt = require('jsonwebtoken')
+const createError = require('http-errors')
 const AuthModel = require('../models/Auth.model')
 const UserModel = require('../models/User.model')
 
 class Auth {
-  async login(req, res) {
-    if (typeof req.body.Username !== 'undefined' && typeof req.body.Password !== 'undefined') {
+  async login(req, res, next) {
+    if (req.body.Username !== undefined && req.body.Password !== undefined) {
       const username = req.body.Username
-      console.log(username)
       const result = await AuthModel.checkAcc(req.body)
       if (result.status) {
         const accessToken = jwt.sign({ username: username, role: result.role }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 60*10 })
@@ -16,23 +16,18 @@ class Auth {
           res.cookie("refreshToken", refreshToken)
           res.status(200).json({ Username: username, Name: result.Name, Image: result.Image})
         } else {
-          res.status(500).send("Error")
+          next(createError.InternalServerError())
         }
       } else {
-        res.sendStatus(401)
+        next(createError.Unauthorized())
       }
     } else {
-      res.sendStatus(422)
+      next(createError.UnprocessableEntity())
     }
   }
 
-  async checkUsername(req, res) {
-    const result = await AuthModel.isUsername(req.body.Username)
-    res.send({ isExist: result })
-  }
-
-  async resgister(req, res) {
-    let accountInfo = req.body
+  async resgister(req, res, next) {
+    let accountInfo = req.body // Username, Password, Name, Image
     try{
       if(!accountInfo.Image){
         accountInfo.Image = "defaultImage.png"
@@ -43,35 +38,33 @@ class Auth {
       await UserModel.createTableGroupOfUser(accountInfo.Username)
       await UserModel.createTableRequestLog(accountInfo.Username)
       res.status(200).send("Success")
-    } catch(e){
-      console.log(e)
-      res.status(500).send("ERROR")
+    } catch(err){
+      next(err)
     }
   }
 
   async authenticate(req, res, next) {
-    if (req.body.Username === undefined || req.body.Username === "" || !/^[a-zA-Z0-9]{1,20}$/.test(req.body.Username)) {
-      res.sendStatus(401)
+    if (req.body.Username === undefined || /^$/.test(req.body.Username)) {
+      next(createError.UnprocessableEntity())
       return false
     } else if (await AuthModel.isUsername(req.body.Username)) {
-      res.sendStatus(401)
+      next(createError.Conflict())
       return false
     }
 
-    if (typeof req.body.Password === 'undefined' || req.body.Password === "" || !/^[a-zA-Z0-9]{8,20}$/.test(req.body.Password)) {
-      res.sendStatus(401)
+    if (req.body.Password === undefined || /^.{0,7}$/.test(req.body.Password)) {
+      next(createError.UnprocessableEntity())
       return false
     }
 
-    if (typeof req.body.Name === 'undefined' || req.body.Name === "" || !/^[a-zvxyỳọáầảấờễàạằệếýộậốũứĩõúữịỗìềểẩớặòùồợãụủíỹắẫựỉỏừỷởóéửỵẳẹèẽổẵẻỡơôưăêâđA-Z0-9]{1,20}$/.test(req.body.Name)) {
-      res.sendStatus(401)
+    if (req.body.Name === undefined || /^$/.test(req.body.Name)) {
+      next(createError.UnprocessableEntity())
       return false
     }
-
     next()
   }
 
-  refreshToken(req, res) {
+  refreshToken(req, res, next) {
     const token = req.cookies.refreshToken
     console.log("RefreshToke: ", token)
     if (token !== undefined) {
@@ -83,18 +76,18 @@ class Auth {
             res.cookie("accessToken", accessToken)
             res.status(200).send("Success")
           } else {
-            res.status(403).send("Failed")
+            next(createError.Unauthorized())
           }
         } else {
-          res.status(403).send("Failed")
+          next(createError.Unauthorized())
         }
       })
     } else {
-      res.status(403).send("Failed")
+      next(createError.Unauthorized())
     }
   }
 
-  logout(req, res) {
+  async logout(req, res, next) {
     const token = req.cookies.refreshToken
     if(token !== undefined){
       jwt.verify(token, process.env.REFRESH_ACCESS_TOKEN_SECRET, async (err, data) => {
@@ -103,11 +96,11 @@ class Auth {
           res.cookie("refreshToken", "")
           res.status(200).send("Logout done")
         } else {
-          res.status(403).send("Failed")
+          next(createError.Unauthorized())
         }
       })
     } else {
-      res.status(403).send("Failed")
+      next(createError.Unauthorized())
     }
   }
 }

@@ -1,6 +1,10 @@
 const express = require('express')
+const verifyToken = require('../middleware/verifyToken')
 const User = require('../controllers/User.controller')
 const router = express.Router()
+
+//middleware check token is exist
+router.use(verifyToken) 
 
 // Get danh sách bạn của tài khoản
 router.get('/listFriend', User.getListFriend)

@@ -1,9 +1,10 @@
 const { v4: uuidv4 } = require('uuid')
+const createError = require('http-errors')
 const UserModel = require('../models/User.model')
 
 class User {
 
-  async getListRequest(req, res){
+  async getListRequest(req, res, next){
     const idCurrentUser = req.username
     const page = req.query.page
     const quantity = req.query.quantity
@@ -12,22 +13,22 @@ class User {
       res.status(200).json(result)
     } catch(e){
       console.log(e)
-      res.sendStatus(500)
+      next(createError.InternalServerError())
     }
   }
 
-  async getQuantityListRequest(req, res){
+  async getQuantityListRequest(req, res, next){
     const idCurrentUser = req.username
     try{
       const result = await UserModel.getQuantityRequest(idCurrentUser)
       res.status(200).json(result)
     } catch(e){
       console.log(e)
-      res.sendStatus(500)
+      next(createError.InternalServerError())
     }
   }
 
-  async getListFriend(req, res){
+  async getListFriend(req, res, next){
     const idCurrentUser = req.username
     const page = req.query.page
     const quantity = req.query.quantity
@@ -37,14 +38,14 @@ class User {
         res.status(200).json(result)
       } catch(e){
         console.log(e)
-        res.sendStatus(500)
+        next(createError.InternalServerError())
       }
     } else {
-      res.sendStatus(422)
+      next(createError.InternalServerError())
     }
   }
 
-  async getQuantityListFriend(req, res){
+  async getQuantityListFriend(req, res, next){
     const idCurrentUser = req.username
     if(idCurrentUser){
       try{
@@ -52,14 +53,14 @@ class User {
         res.status(200).json(result)
       } catch(e){
         console.log(e)
-        res.sendStatus(500)
+        next(createError.InternalServerError())
       }
     } else {
-      res.sendStatus(422)
+      next(createError.UnprocessableEntity())
     }
   }
 
-  async postRequest(req, res){
+  async postRequest(req, res, next){
     const data = req.body
     // Bảo vệ route xác thực đúng username
     data.mySelf.Username = req.username
@@ -68,11 +69,11 @@ class User {
       await UserModel.addRequestToLog(data.mySelf.Username, data.friend.Username)
       res.sendStatus(200)
     } catch(e){
-      res.sendStatus(500)
+      next(createError.InternalServerError())
     }
   }
 
-  async addFriend(req, res){
+  async addFriend(req, res, next){
     const data = req.body
     const idRoom = uuidv4().replace(/-/g, "")
     // Bảo vệ route xác thực đúng username
@@ -85,11 +86,11 @@ class User {
       await UserModel.createRoom(idRoom)
       res.sendStatus(200)
     } catch(e){
-      res.sendStatus(500)
+      next(createError.InternalServerError())
     }
   }
 
-  async refuseRequest(req, res){
+  async refuseRequest(req, res, next){
     const idCurrentUser = req.username
     const idRefuse = req.query.idRefuse
     try {
@@ -97,7 +98,7 @@ class User {
       await UserModel.deleteRequestLogOfFriend(idCurrentUser, idRefuse)
       res.sendStatus(200)
     } catch(e){
-      res.sendStatus(500)
+      next(createError.InternalServerError())
     }
   }
 }

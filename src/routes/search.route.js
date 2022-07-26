@@ -1,6 +1,10 @@
 const express = require('express')
 const router = express.Router()
 const Search = require('../controllers/Search.controller')
+const verifyToken = require('../middleware/verifyToken')
+
+//middleware check token is exist
+router.use(verifyToken) 
 
 // Tìm kiếm bạn thỏa search value
 router.get('/friend', Search.searchUserToChat)

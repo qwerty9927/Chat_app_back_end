@@ -1,5 +1,6 @@
+const createError = require('http-errors')
 const ChatModel = require("../models/Chat.model")
-const UserModel = require("../models/User.model")
+const UserModel = require('../models/User.model')
 
 class Chat{
   async checkRoom(req, res, next){
@@ -10,14 +11,14 @@ class Chat{
       if(result){
         next()
       } else {
-        res.sendStatu(403)
+        next(createError.Forbidden())
       }
     } catch(e){
-      res.sendStatus(500)
+      next(createError.InternalServerError())
     }
   }
 
-  async getMessage(req, res){
+  async getMessage(req, res, next){
     const room = req.query.room
     const page = req.query.page
     const quantity = req.query.quantity
@@ -25,7 +26,7 @@ class Chat{
       const result = await ChatModel.getMessage(room, page, quantity)
       res.status(200).json(result)
     } catch(e){
-      res.sendStatus(500)
+      next(createError.InternalServerError())
     } 
   }
 }
