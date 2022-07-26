@@ -10,7 +10,6 @@ const routerUser = require('./src/routes/user.route')
 const routerSearch = require('./src/routes/search.route')
 const routerChat = require('./src/routes/chat.route')
 const ServiceChat = require('./src/services/Chat.service')
-const verifyToken = require('./src/middleware/verifyToken')
 
 dotenv.config()
 const app = express()
@@ -32,7 +31,6 @@ app.use(cors({
 }))
 app.use(cookieParser())
 app.use('/auth', routerAuth)
-app.use(verifyToken) //middleware check token is exist
 app.use('/chat', routerChat)
 global._io.on("connection", ServiceChat.connect)
 
