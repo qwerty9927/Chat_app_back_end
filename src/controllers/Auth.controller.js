@@ -28,10 +28,8 @@ class Auth {
 
   async resgister(req, res, next) {
     let accountInfo = req.body // Username, Password, Name, Image
+    accountInfo.Image = accountInfo.Image || "defaultImage.png"
     try{
-      if(!accountInfo.Image){
-        accountInfo.Image = "defaultImage.png"
-      }
       await AuthModel.createAcc(accountInfo)
       await UserModel.createTableFriend(accountInfo.Username)
       await UserModel.createTableRequest(accountInfo.Username)
