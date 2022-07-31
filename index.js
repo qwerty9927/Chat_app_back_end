@@ -9,6 +9,8 @@ const routerAdmin = require('./src/routes/admin.route')
 const routerUser = require('./src/routes/user.route')
 const routerSearch = require('./src/routes/search.route')
 const routerChat = require('./src/routes/chat.route')
+const routerGroup = require('./src/routes/group.route')
+const routerRequest = require('./src/routes/request.route')
 const ServiceChat = require('./src/services/Chat.service')
 
 dotenv.config()
@@ -35,7 +37,9 @@ app.use('/chat', routerChat)
 global._io.on("connection", ServiceChat.connect)
 
 app.use('/admin', routerAdmin)
+app.use('/request', routerRequest)
 app.use('/user', routerUser)
+app.use('/group', routerGroup)
 app.use('/search', routerSearch)
 
 app.use((req, res) => {

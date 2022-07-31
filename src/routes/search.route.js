@@ -3,25 +3,25 @@ const router = express.Router()
 const Search = require('../controllers/Search.controller')
 const verifyToken = require('../middleware/verifyToken')
 
-//middleware check token is exist
+// Middleware check token is exist
 router.use(verifyToken) 
 
-// Tìm kiếm bạn thỏa search value
-router.get('/friend', Search.searchUserToChat)
+// Search friend in list friend
+router.get('/friend', Search.searchFriendToChat)
 
-//Số lượng bạn thỏa search value
-router.get('/quantityFriendFound', Search.quantityUserToChatFound)
+// Quantity friend found in list friend
+router.get('/quantityFriendFound', Search.quantityFriendToChat)
 
-// Tìm kiếm bạn mới thỏa search value
-router.get('/addUser', Search.searchUserToAdd)
+// Search user in account
+router.get('/searchUser', Search.searchUserToAdd)
 
-//Số lượng bạn mới thỏa search value
-router.get('/quantityNewUserFound', Search.quantityUserToAddFound)
+// Quantity user found in account
+router.get('/quantityUserFound', Search.quantityUserToAdd)
 
-// Tìm kiếm thư yêu cầu thỏa search value
-router.get('/request', Search.searchUserInRequestBox)
+// Search request in mail request
+router.get('/request', Search.searchRequest)
 
-//Số lượng thư yêu cầu thỏa search value
+// Quantity request found in main request
 router.get('/quantityRequestFound', Search.quantityRequestFound)
 
 module.exports = router
