@@ -35,9 +35,43 @@ class UserModel extends DB {
     }
   }
 
+  async createTableRequestGroup(id){
+    const sql = `CREATE TABLE mail_request_group_${id} (
+      idUser varchar(20) NOT NULL PRIMARY KEY,
+      NameGroup nVarchar(20),
+      ImageGroup varchar(100),
+      idRoom varChar(50)
+    )`
+    try{
+      await this.excuseQuery(sql)
+      return true
+    }catch(e){
+      console.log(e)
+      throw e.message
+    }
+  }
+
+  async createTableResponse(id){
+    const sql = `CREATE TABLE mail_response_${id} (
+      id int(10) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+      NameRes nVarchar(20),
+      Image varchar(100), 
+      Type varchar(10),
+      isAccept int(2)
+    )`
+    try{
+      await this.excuseQuery(sql)
+      return true
+    }catch(e){
+      console.log(e)
+      throw e.message
+    }
+  }
+
   async createTableRequestLog(id){
     const sql = `CREATE TABLE request_log_${id} (
-      idUserLog varchar(20) NOT NULL PRIMARY KEY
+      idUserLog varchar(20) NOT NULL PRIMARY KEY,
+      Type varchar(10)
     )`
     try{
       await this.excuseQuery(sql)
@@ -50,7 +84,7 @@ class UserModel extends DB {
 
   async createTableGroupOfUser(id){
     const sql = `CREATE TABLE user_group_${id} (
-      idGroup int(10) NOT NULL PRIMARY KEY,
+      idRoom varchar(50) NOT NULL PRIMARY KEY,
       NameGroup nVarchar(20),
       Image varchar(100),
       JoinDate date
@@ -64,23 +98,7 @@ class UserModel extends DB {
     }
   }
 
-  async createRoom(idRoom){
-    const sql = `Create table ${idRoom} (
-      idMessage int(10) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-      idAuthor varchar(20),
-      Message varchar(255),
-      Image varchar(200),
-      Time Timestamp NOT NULL
-    )`
-    try {
-      await this.excuseQuery(sql)
-    } catch(e){
-      console.log(e)
-      throw e.message
-    }
-  }
-
-  async getFriend(idCurrentUser, page, quantity){
+  async getFriendModel(idCurrentUser, page, quantity){
     try{
       const friendOfQuery = await this.select(`list_friend_${idCurrentUser}`, "*", `Limit ${page*quantity}, ${quantity}`)
       return {friendOfQuery}
@@ -90,90 +108,10 @@ class UserModel extends DB {
     }
   }
 
-  async getQuantityFriend(idCurrentUser){
+  async getQuantityFriendModel(idCurrentUser){
     try{
       const quantity = (await this.select(`list_friend_${idCurrentUser}`, "Count(*) as count"))[0].count
       return quantity
-    } catch(e){
-      console.log(e)
-      throw e.message
-    }
-  }
-
-  async getRequest(idCurrentUser, page, quantity){
-    try{
-      const requestOfQuery = await this.select(`mail_request_${idCurrentUser}`, "*", `Limit ${page*quantity}, ${quantity} `)
-      return {requestOfQuery}
-    } catch(e){
-      console.log(e)
-      throw e.message
-    }
-  }
-
-  async getQuantityRequest(idCurrentUser){
-    try{
-      const quantity = (await this.select(`mail_request_${idCurrentUser}`, "Count(*) as count"))[0].count
-      return quantity
-    } catch(e){
-      console.log(e)
-      throw e.message
-    }
-  }
-
-  async addRequestToFriend(mySelf, idOfFriend){
-    const sql = `Insert into mail_request_${idOfFriend} (idUser, NameUserReq, Image) Values ('${mySelf.Username}', '${mySelf.Name}', '${mySelf.Image}')`
-    try{
-      await this.excuseQuery(sql)
-    } catch(e){
-      console.log(e)
-      throw e.message
-    }
-  }
-
-  async addRequestToLog(idMySelf, idOfFriend){
-    const sql = `Insert into request_log_${idMySelf} (idUserLog) Values ('${idOfFriend}')`
-    try{
-      await this.excuseQuery(sql)
-    } catch(e){
-      console.log(e)
-      throw e.message
-    }
-  }
-
-  async addFriendToMyListFriend(idMySelf, friend, idRoom){
-    const sql = `Insert into list_friend_${idMySelf} (idFriend, NameFriend, Image, idRoom) Values ('${friend.Username}', '${friend.Name}', '${friend.Image}', '${idRoom}')`
-    try{
-      await this.excuseQuery(sql)
-    } catch(e){
-      console.log(e)
-      throw e.message
-    }
-  }
-
-  async addFriendToYourListFriend(myself, idOfFriend, idRoom){
-    const sql = `Insert into list_friend_${idOfFriend} (idFriend, NameFriend, Image, idRoom) Values ('${myself.Username}', '${myself.Name}', '${myself.Image}', '${idRoom}')`
-    try{
-      await this.excuseQuery(sql)
-    } catch(e){
-      console.log(e)
-      throw e.message
-    }
-  }
-
-  async deleteMailRequestOfUser(idCurrentUser, idFriend){
-    const sql = `Delete from mail_request_${idCurrentUser} where idUser = '${idFriend}'`
-    try{
-      await this.excuseQuery(sql)
-    } catch(e){
-      console.log(e)
-      throw e.message
-    }
-  }
-
-  async deleteRequestLogOfFriend(idCurrentUser, idFriend){
-    const sql = `Delete from request_log_${idFriend} where idUserLog = '${idCurrentUser}'`
-    try{
-      await this.excuseQuery(sql)
     } catch(e){
       console.log(e)
       throw e.message

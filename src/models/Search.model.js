@@ -1,7 +1,7 @@
 const DB = require('./DB.model')
 class SearchModel extends DB{
 
-  async findUserToChat(idCurrentUser, searchValue, page, quantity){
+  async searchFriendToChatModel(idCurrentUser, searchValue, page, quantity){
     const sql = `Select * from list_friend_${idCurrentUser} where NameFriend like '${searchValue}%' Limit ${page*quantity}, ${quantity}`
     try{
       const friendOfQuery = await this.excuseQuery(sql)
@@ -12,7 +12,7 @@ class SearchModel extends DB{
     }
   }
 
-  async quantityUserToChat(idCurrentUser, searchValue){
+  async quantityFriendToChatModel(idCurrentUser, searchValue){
     const sql = `Select Count(*) as count from list_friend_${idCurrentUser} where NameFriend like '${searchValue}%'`
     try{
       const quantity = (await this.excuseQuery(sql))[0].count
@@ -23,10 +23,12 @@ class SearchModel extends DB{
     }
   }
 
-  async findUserToAdd(idCurrentUser, searchValue, page, quantity){
+  async searchUserToAddModel(idCurrentUser, searchValue, page, quantity){
     const sql = `
-      Select Username, Name, ac.Image, idUserLog
-      From account as ac LEFT join request_log_${idCurrentUser} on ac.Username = idUserLog
+      Select Username, Name, ac.Image, idUserLog, idUser
+      From account as ac 
+        LEFT join request_log_${idCurrentUser} on ac.Username = idUserLog and Type='User'
+        LEFT join mail_request_${idCurrentUser} on ac.Username = idUser and Type='User'
       Where ac.Username <> "${idCurrentUser}" and ac.username not in (
         Select idFriend
         From list_friend_${idCurrentUser}
@@ -41,10 +43,12 @@ class SearchModel extends DB{
     }
   }
 
-  async quantityUserToAdd(idCurrentUser, searchValue){
+  async quantityUserToAddModel(idCurrentUser, searchValue){
     const sql = `
       Select Count(*) as count
-      From account as ac LEFT join request_log_${idCurrentUser} on ac.Username = idUserLog
+      From account as ac 
+        LEFT join request_log_${idCurrentUser} on ac.Username = idUserLog and Type='User'
+        LEFT join mail_request_${idCurrentUser} on ac.Username = idUser and Type='User'
       Where ac.Username <> "${idCurrentUser}" and ac.username not in (
         Select idFriend
         From list_friend_${idCurrentUser}
@@ -59,7 +63,7 @@ class SearchModel extends DB{
     }
   }
 
-  async findUserInRequestBox(idCurrentUser, searchValue, page, quantity){
+  async searchRequestModel(idCurrentUser, searchValue, page, quantity){
     const sql = `Select idUser, NameUserReq, Image from mail_request_${idCurrentUser} where NameUserReq like '${searchValue}%' Limit ${page*quantity}, ${quantity}`
     try{
       const requestOfQuery = await this.excuseQuery(sql)
@@ -70,7 +74,7 @@ class SearchModel extends DB{
     }
   }
 
-  async quantityRequest(idCurrentUser, searchValue){
+  async quantityRequestModel(idCurrentUser, searchValue){
     const sql = `Select Count(*) as count from mail_request_${idCurrentUser} where NameUserReq like '${searchValue}%'`
     try{
       const quantity = (await this.excuseQuery(sql))[0].count

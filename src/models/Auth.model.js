@@ -1,3 +1,4 @@
+const moment = require('moment')
 const DB = require('./DB.model')
 const Redis = require('./Redis.model')
 const bcrypt = require('bcrypt')
@@ -38,8 +39,7 @@ class AuthModel extends DB{
   }
 
   async createAcc(data){
-    let date = new Date()
-    data.DateCreate = date.toISOString().split('T')[0]
+    data.DateCreate = moment().format("YYYY-MM-DD")
     data.Password = await bcrypt.hash(data.Password, 10)
     data.Status = 1
     data.Role = 2

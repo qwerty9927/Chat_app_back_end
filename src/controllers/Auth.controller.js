@@ -5,16 +5,16 @@ const UserModel = require('../models/User.model')
 
 class Auth {
   async login(req, res, next) {
-    if (req.body.Username !== undefined && req.body.Password !== undefined) {
-      const username = req.body.Username
-      const result = await AuthModel.checkAcc(req.body)
+    const data = req.body
+    if (data.Username && data.Password) {
+      const result = await AuthModel.checkAcc(data)
       if (result.status) {
-        const accessToken = jwt.sign({ username: username, role: result.role }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 60*10 })
-        const refreshToken = jwt.sign({ username: username, role: result.role }, process.env.REFRESH_ACCESS_TOKEN_SECRET)
-        if(await AuthModel.setToken(username, refreshToken)){
+        const accessToken = jwt.sign({ username: data.Username, role: result.role }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 60*10 })
+        const refreshToken = jwt.sign({ username: data.Username, role: result.role }, process.env.REFRESH_ACCESS_TOKEN_SECRET)
+        if(await AuthModel.setToken(data.Username, refreshToken)){
           res.cookie("accessToken", accessToken)
           res.cookie("refreshToken", refreshToken)
-          res.status(200).json({ Username: username, Name: result.Name, Image: result.Image})
+          res.status(200).json({ Username: data.Username, Name: result.Name, Image: result.Image})
         } else {
           next(createError.InternalServerError())
         }
@@ -28,36 +28,36 @@ class Auth {
 
   async resgister(req, res, next) {
     let accountInfo = req.body // Username, Password, Name, Image
+    accountInfo.Image = accountInfo.Image || "defaultImage.png"
     try{
-      if(!accountInfo.Image){
-        accountInfo.Image = "defaultImage.png"
-      }
       await AuthModel.createAcc(accountInfo)
       await UserModel.createTableFriend(accountInfo.Username)
       await UserModel.createTableRequest(accountInfo.Username)
+      await UserModel.createTableRequestGroup(accountInfo.Username)
       await UserModel.createTableGroupOfUser(accountInfo.Username)
       await UserModel.createTableRequestLog(accountInfo.Username)
       res.status(200).send("Success")
     } catch(err){
-      next(err)
+      next(createError.InternalServerError())
     }
   }
 
   async authenticate(req, res, next) {
-    if (req.body.Username === undefined || /^$/.test(req.body.Username)) {
+    const data = req.body
+    if (!data.Username) {
       next(createError.UnprocessableEntity())
       return false
-    } else if (await AuthModel.isUsername(req.body.Username)) {
+    } else if (await AuthModel.isUsername(data.Username)) {
       next(createError.Conflict())
       return false
     }
 
-    if (req.body.Password === undefined || /^.{0,7}$/.test(req.body.Password)) {
+    if (data.Password || /^.{0,7}$/.test(data.Password)) {
       next(createError.UnprocessableEntity())
       return false
     }
 
-    if (req.body.Name === undefined || /^$/.test(req.body.Name)) {
+    if (!data.Name) {
       next(createError.UnprocessableEntity())
       return false
     }
@@ -67,7 +67,7 @@ class Auth {
   refreshToken(req, res, next) {
     const token = req.cookies.refreshToken
     console.log("RefreshToke: ", token)
-    if (token !== undefined) {
+    if (token) {
       jwt.verify(token, process.env.REFRESH_ACCESS_TOKEN_SECRET, async (err, data) => {
         if (data) {
           const refreshTokenInStore = await AuthModel.getToken(data.username)
@@ -89,7 +89,7 @@ class Auth {
 
   async logout(req, res, next) {
     const token = req.cookies.refreshToken
-    if(token !== undefined){
+    if(token){
       jwt.verify(token, process.env.REFRESH_ACCESS_TOKEN_SECRET, async (err, data) => {
         if(data && await AuthModel.delToken(data.username)){
           res.cookie("accessToken", "")
