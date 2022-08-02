@@ -35,9 +35,43 @@ class UserModel extends DB {
     }
   }
 
+  async createTableRequestGroup(id){
+    const sql = `CREATE TABLE mail_request_group_${id} (
+      idUser varchar(20) NOT NULL PRIMARY KEY,
+      NameGroup nVarchar(20),
+      ImageGroup varchar(100),
+      idRoom varChar(50)
+    )`
+    try{
+      await this.excuseQuery(sql)
+      return true
+    }catch(e){
+      console.log(e)
+      throw e.message
+    }
+  }
+
+  async createTableResponse(id){
+    const sql = `CREATE TABLE mail_response_${id} (
+      id int(10) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+      NameRes nVarchar(20),
+      Image varchar(100), 
+      Type varchar(10),
+      isAccept int(2)
+    )`
+    try{
+      await this.excuseQuery(sql)
+      return true
+    }catch(e){
+      console.log(e)
+      throw e.message
+    }
+  }
+
   async createTableRequestLog(id){
     const sql = `CREATE TABLE request_log_${id} (
-      idUserLog varchar(20) NOT NULL PRIMARY KEY
+      idUserLog varchar(20) NOT NULL PRIMARY KEY,
+      Type varchar(10)
     )`
     try{
       await this.excuseQuery(sql)
@@ -50,7 +84,7 @@ class UserModel extends DB {
 
   async createTableGroupOfUser(id){
     const sql = `CREATE TABLE user_group_${id} (
-      idGroup int(10) NOT NULL PRIMARY KEY,
+      idRoom varchar(50) NOT NULL PRIMARY KEY,
       NameGroup nVarchar(20),
       Image varchar(100),
       JoinDate date
@@ -59,22 +93,6 @@ class UserModel extends DB {
       await this.excuseQuery(sql)
       return true
     }catch(e){
-      console.log(e)
-      throw e.message
-    }
-  }
-
-  async createRoom(idRoom){
-    const sql = `Create table ${idRoom} (
-      idMessage int(10) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-      idAuthor varchar(20),
-      Message varchar(255),
-      Image varchar(200),
-      Time Timestamp NOT NULL
-    )`
-    try {
-      await this.excuseQuery(sql)
-    } catch(e){
       console.log(e)
       throw e.message
     }

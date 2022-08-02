@@ -1,52 +1,44 @@
+const { v4: uuidv4 } = require('uuid')
 const createError = require('http-errors')
 const GroupModel = require('../models/Group.model')
-const UserModel = require('../models/User.model')
+const RequestModel = require('../models/Request.model')
 
 class Group {
   async createGroup(req, res, next) {
-    const admin = req.username
-    const name = req.body.Name
-    const image = req.body.Image || "defaultImage.png"
-    try {
-      await GroupModel.createGroup(name, image, admin)
-      res.sendStatus(200)
-    } catch (e){
-      console.log(e)
-      next(e)
-    }
-  }
-
-  async postRequest(req, res, next){
+    const idRoom = uuidv4().replace(/-/g, "")
     const data = req.body
     // Bảo vệ route xác thực đúng username
-    data.myself.Username = req.username
+    data.mySelf.Username = req.username
     try {
-      //post into request log of main user
-      await UserModel.addRequestToLog(data.myself.Username, data.friend.Username)
-      //post into user purpose
-      await UserModel.addRequestToFriend(data.myself, data.friend.Username)
-    } catch(e){
-      console.log(e)
+      await GroupModel.createGroup(data.group.Name, data.group.Image, data.mySelf.Username, idRoom)
+      await GroupModel.createTableGroupMember(idRoom)
+      await GroupModel.createTableGroupMail(idRoom)
+      await GroupModel.insertAdminInGroup(data.mySelf, idRoom)
+      await GroupModel.createTableGroupLog(idRoom)
+      await GroupModel.createTableGroupMessage(idRoom)
+      res.sendStatus(200)
+    } catch (e){
       next(createError.InternalServerError())
     }
   }
 
-  async acceptGroup(req, res, next){
-    // const data = req.body
-    // // Bảo vệ route xác thực đúng username
-    // data.mySelf.Username = req.username
-    // try{
-    //   await UserModel.addFriendToMyListFriend(data.mySelf.Username, data.friend, idRoom)
-    //   await UserModel.addFriendToYourListFriend(data.mySelf, data.friend.Username, idRoom)
-    //   await UserModel.deleteRequestLogOfFriend(data.mySelf.Username, data.friend.Username)
-    //   await UserModel.deleteMailRequestOfUser(data.mySelf.Username, data.friend.Username)
-    //   await UserModel.createRoom(idRoom)
-    //   res.sendStatus(200)
-    // } catch(e){
-    //   next(createError.InternalServerError())
-    // }
+  async getListGroup(req, res, next){
+    try {
+      const result = await GroupModel.getGroupModel(req.username)
+      res.status(200).json(result)
+    } catch(e){
+      next(e)
+    }
   }
 
+  async getQuantityListGroup(req, res, next){
+    try {
+      const result = await GroupModel.getQuantityGroup(req.username)
+      res.status(200).json(result)
+    } catch(e){
+      next(e)
+    }
+  }
 }
 
 module.exports = new Group()

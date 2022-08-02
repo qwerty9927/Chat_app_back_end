@@ -13,12 +13,9 @@ router.get('/listRequest', Request.getListRequest)
 router.get('/quantityListRequest', Request.getQuantityListRequest)
 
 // Send request to purpose user
-router.post('/sendRequest', Request.sendRequest)
+router.post('/sendRequestUser', Request.sendRequestUser)
 
-// Post user accepted into list friend
-router.post('/acceptRequest', Request.acceptRequest)
-
-// Delete request sender in mail request
-router.delete('/refuseRequest', Request.refuseRequest)
+// Send request to friend invited in group
+router.post('/sendInvitationGroup', Request.sendInvitationGroup)
 
 module.exports = router

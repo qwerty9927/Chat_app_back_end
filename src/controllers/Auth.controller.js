@@ -33,11 +33,12 @@ class Auth {
       await AuthModel.createAcc(accountInfo)
       await UserModel.createTableFriend(accountInfo.Username)
       await UserModel.createTableRequest(accountInfo.Username)
+      await UserModel.createTableRequestGroup(accountInfo.Username)
       await UserModel.createTableGroupOfUser(accountInfo.Username)
       await UserModel.createTableRequestLog(accountInfo.Username)
       res.status(200).send("Success")
     } catch(err){
-      next(err)
+      next(createError.InternalServerError())
     }
   }
 

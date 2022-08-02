@@ -9,18 +9,10 @@ router.use(verifyToken)
 // Route create group
 router.post('/createGroup', Group.createGroup)
 
-// Route send request to user
-router.post('/sendRequest', Group.postRequest)
+// Get list group
+router.get('/listGroup', Group.getListGroup)
 
-// Route accept request receive
-router.post('/acceptGroup', Group.acceptGroup)
-
-// Route refuse request receive
-router.post('/acceptGroup', Group.acceptGroup)
-
-// Route add user to group
-// router.post('/addUserGroup', Group.addUserGroup)
-
-
+// Quantity group in list group
+router.get('/quantityListGroup', Group.getQuantityListGroup)
 
 module.exports = router

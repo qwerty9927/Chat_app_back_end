@@ -24,7 +24,7 @@ class Request extends DB {
     }
   }
 
-  async addRequestToFriendModel(mySelf, idOfFriend){
+  async addToMailRequestModel(mySelf, idOfFriend){
     const sql = `Insert into mail_request_${idOfFriend} (idUser, NameUserReq, Image) Values ('${mySelf.Username}', '${mySelf.Name}', '${mySelf.Image}')`
     try{
       await this.excuseQuery(sql)
@@ -34,8 +34,8 @@ class Request extends DB {
     }
   }
 
-  async addRequestToLogModel(idMySelf, idOfFriend){
-    const sql = `Insert into request_log_${idMySelf} (idUserLog) Values ('${idOfFriend}')`
+  async addRequestToLogOfUserModel(idMySelf, idOfFriend){
+    const sql = `Insert into request_log_${idMySelf} (idUserLog, Type) Values ('${idOfFriend}', 'User')`
     try{
       await this.excuseQuery(sql)
     } catch(e){
@@ -44,8 +44,8 @@ class Request extends DB {
     }
   }
 
-  async addFriendToMyListFriend(idMySelf, friend, idRoom){
-    const sql = `Insert into list_friend_${idMySelf} (idFriend, NameFriend, Image, idRoom) Values ('${friend.Username}', '${friend.Name}', '${friend.Image}', '${idRoom}')`
+  async addToMailRequestGroupModel(idMySelf, idOfFriend, group, idRoom){
+    const sql = `Insert into mail_request_group_${idOfFriend} (idUser, NameGroup, ImageGroup, idRoom) Values ( '${idMySelf}', '${group.Name}', '${group.Image}', '${idRoom}')`
     try{
       await this.excuseQuery(sql)
     } catch(e){
@@ -54,28 +54,8 @@ class Request extends DB {
     }
   }
 
-  async addFriendToYourListFriend(myself, idOfFriend, idRoom){
-    const sql = `Insert into list_friend_${idOfFriend} (idFriend, NameFriend, Image, idRoom) Values ('${myself.Username}', '${myself.Name}', '${myself.Image}', '${idRoom}')`
-    try{
-      await this.excuseQuery(sql)
-    } catch(e){
-      console.log(e)
-      throw e.message
-    }
-  }
-
-  async deleteMailRequestOfUser(idCurrentUser, idFriend){
-    const sql = `Delete from mail_request_${idCurrentUser} where idUser = '${idFriend}'`
-    try{
-      await this.excuseQuery(sql)
-    } catch(e){
-      console.log(e)
-      throw e.message
-    }
-  }
-
-  async deleteRequestLogOfFriend(idCurrentUser, idFriend){
-    const sql = `Delete from request_log_${idFriend} where idUserLog = '${idCurrentUser}'`
+  async addRequestToLogOfGroupModel(idMySelf, friend, idRoom){
+    const sql = `Insert into group_log_${idRoom} (idUserInvited, NameUser, Image, idUserInvite) Values ('${friend.Username}', '${friend.Name}', '${friend.Image}', '${idMySelf}')`
     try{
       await this.excuseQuery(sql)
     } catch(e){
