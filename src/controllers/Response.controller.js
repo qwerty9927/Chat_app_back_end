@@ -40,7 +40,7 @@ class Response {
       await ResponseModel.deleteRequestLog(data.mySelf.Username, data.friend.Username)
       await ResponseModel.deleteMailRequestUser(data.mySelf.Username, data.friend.Username)
       await ResponseModel.createRoom(idRoom)
-      await ResponseModel.sendResponseUser(data.mySelf, data.friend.Username, 1)
+      await ResponseModel.sendResponseUser(data.mySelf, data.mySelf.Username, data.friend.Username, 1)
       res.sendStatus(200)
     } catch(e){
       next(createError.InternalServerError())
@@ -54,7 +54,7 @@ class Response {
     try {
       await ResponseModel.deleteMailRequestUser(data.mySelf.Username, data.friend.Username)
       await ResponseModel.deleteRequestLog(data.mySelf.Username, data.friend.Username)
-      await ResponseModel.sendResponseUser(data.mySelf, data.friend.Username, 0)
+      await ResponseModel.sendResponseUser(data.mySelf, data.mySelf.Username, data.friend.Username, 0)
       res.sendStatus(200)
     } catch(e){
       next(createError.InternalServerError())
@@ -71,7 +71,7 @@ class Response {
       await ResponseModel.addToListMember(data.mySelf, idRoom)
       await ResponseModel.deleteGroupLog(data.mySelf.Username, idRoom)
       await ResponseModel.deleteMailRequestGroup(data.mySelf.Username, data.friend.Username)
-      await ResponseModel.sendResponseGroup(data.group, data.friend.Username, 1)
+      await ResponseModel.sendResponseGroup(data.group, data.mySelf.Username, data.friend.Username, 1)
       res.sendStatus(200)
     } catch(e){
       next(createError.InternalServerError())
@@ -85,7 +85,7 @@ class Response {
     try {
       await ResponseModel.deleteMailRequestGroup(data.mySelf.Username, data.friend.Username)
       await ResponseModel.deleteGroupLog(data.mySelf.Username, data.idRoom)
-      await ResponseModel.sendResponseGroup(data.group, data.friend.Username, 0)
+      await ResponseModel.sendResponseGroup(data.group, data.mySelf.Username, data.friend.Username, 0)
       res.sendStatus(200)
     } catch(e){
       next(createError.InternalServerError())

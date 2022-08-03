@@ -34,6 +34,7 @@ class Auth {
       await UserModel.createTableFriend(accountInfo.Username)
       await UserModel.createTableRequest(accountInfo.Username)
       await UserModel.createTableRequestGroup(accountInfo.Username)
+      await UserModel.createTableResponse(accountInfo.Username)
       await UserModel.createTableGroupOfUser(accountInfo.Username)
       await UserModel.createTableRequestLog(accountInfo.Username)
       res.status(200).send("Success")
@@ -52,7 +53,7 @@ class Auth {
       return false
     }
 
-    if (data.Password || /^.{0,7}$/.test(data.Password)) {
+    if (/^.{0,7}$/.test(data.Password)) {
       next(createError.UnprocessableEntity())
       return false
     }

@@ -39,8 +39,14 @@ class ResponseModel extends DB {
     }
   }
 
-  async sendResponseUser(mySelf, idOfFriend, isAccept){
-    const sql = `Insert into mail_response_${idOfFriend} (NameRes, Image, Type, isAccept) Values ('${mySelf.Name}', '${mySelf.Image}', 'User', ${isAccept})`
+  async sendResponseUser(mySelf, idMySelf, idOfFriend, isAccept){
+    const sql = `Insert into mail_response_${idOfFriend} (idUser, NameRes, Image, Type, isAccept) Values ('${idMySelf}', '${mySelf.Name}', '${mySelf.Image}', 'User', ${isAccept})`
+    try {
+      await this.excuseQuery(sql)
+    } catch(e){
+      console.log(e)
+      throw e.message
+    }
   }
 
   async addFriendToMyListFriend(idMySelf, friend, idRoom){
@@ -83,8 +89,14 @@ class ResponseModel extends DB {
     }
   }
 
-  async sendResponseGroup(group, idOfFriend, isAccept) {
-    const sql = `Insert into mail_response_${idOfFriend} (NameRes, Image, Type, isAccept) Values ('${group.Name}', '${group.Image}', 'Group', ${isAccept})`
+  async sendResponseGroup(group, idMySelf, idOfFriend, isAccept) {
+    const sql = `Insert into mail_response_${idOfFriend} (idUser, NameRes, Image, Type, isAccept) Values ('${idMySelf}', '${group.Name}', '${group.Image}', 'Group', ${isAccept})`
+    try {
+      await this.excuseQuery(sql)
+    } catch(e){
+      console.log(e)
+      throw e.message
+    }
   }
 
   async addGroupToMyUserGroup(idMySelf, group, idRoom){
