@@ -27,8 +27,8 @@ class SearchModel extends DB{
     const sql = `
       Select Username, Name, ac.Image, idUserLog, idUser
       From account as ac 
-        LEFT join request_log_${idCurrentUser} on ac.Username = idUserLog and Type='User'
-        LEFT join mail_request_${idCurrentUser} on ac.Username = idUser and Type='User'
+        LEFT join request_log_${idCurrentUser} on ac.Username = idUserLog
+        LEFT join mail_request_${idCurrentUser} on ac.Username = idUser
       Where ac.Username <> "${idCurrentUser}" and ac.username not in (
         Select idFriend
         From list_friend_${idCurrentUser}
@@ -47,8 +47,8 @@ class SearchModel extends DB{
     const sql = `
       Select Count(*) as count
       From account as ac 
-        LEFT join request_log_${idCurrentUser} on ac.Username = idUserLog and Type='User'
-        LEFT join mail_request_${idCurrentUser} on ac.Username = idUser and Type='User'
+        LEFT join request_log_${idCurrentUser} on ac.Username = idUserLog
+        LEFT join mail_request_${idCurrentUser} on ac.Username = idUser
       Where ac.Username <> "${idCurrentUser}" and ac.username not in (
         Select idFriend
         From list_friend_${idCurrentUser}

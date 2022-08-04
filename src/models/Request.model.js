@@ -1,4 +1,6 @@
+const moment = require('moment')
 const DB = require('./DB.model')
+
 class Request extends DB {
   constructor(){
     super()
@@ -24,7 +26,7 @@ class Request extends DB {
     }
   }
 
-  async addToMailRequestModel(mySelf, idOfFriend){
+  async addRequestToMailModel(mySelf, idOfFriend){
     const sql = `Insert into mail_request_${idOfFriend} (idUser, NameUserReq, Image) Values ('${mySelf.Username}', '${mySelf.Name}', '${mySelf.Image}')`
     try{
       await this.excuseQuery(sql)
@@ -34,8 +36,8 @@ class Request extends DB {
     }
   }
 
-  async addRequestToLogOfUserModel(idMySelf, idOfFriend){
-    const sql = `Insert into request_log_${idMySelf} (idUserLog, Type) Values ('${idOfFriend}', 'User')`
+  async addRequestToMyLogUserModel(idMySelf, idOfFriend){
+    const sql = `Insert into request_log_${idMySelf} (idUserLog) Values ('${idOfFriend}')`
     try{
       await this.excuseQuery(sql)
     } catch(e){
@@ -44,7 +46,7 @@ class Request extends DB {
     }
   }
 
-  async addToMailRequestGroupModel(idMySelf, idOfFriend, group, idRoom){
+  async addInvitationToMailModel(idMySelf, idOfFriend, group, idRoom){
     const sql = `Insert into mail_request_group_${idOfFriend} (idUser, NameGroup, ImageGroup, idRoom) Values ( '${idMySelf}', '${group.Name}', '${group.Image}', '${idRoom}')`
     try{
       await this.excuseQuery(sql)
@@ -54,7 +56,7 @@ class Request extends DB {
     }
   }
 
-  async addRequestToLogOfGroupModel(idMySelf, friend, idRoom){
+  async addInvitationToLogOfGroupModel(idMySelf, friend, idRoom){
     const sql = `Insert into group_log_${idRoom} (idUserInvited, NameUser, Image, idUserInvite) Values ('${friend.Username}', '${friend.Name}', '${friend.Image}', '${idMySelf}')`
     try{
       await this.excuseQuery(sql)
@@ -62,6 +64,28 @@ class Request extends DB {
       console.log(e)
       throw e.message
     }
+  }
+
+  async addRequestToMailGroupModel(mySelf, message, idRoom){
+    const date = moment().format("YYYY-MM-DD")
+    const sql = `Insert into group_mail_${idRoom} (idUser, NameUser, Image, Message, Date) Values ('${mySelf.Username}', '${mySelf.Name}', '${mySelf.Image}', '${message}', '${date}')`
+    try {
+      await this.excuseQuery(sql)
+    } catch(e){
+      console.log(e)
+      throw e.message
+    }
+  }
+
+  async addRequestToMyLogGroupModel(idMySelf, idRoom){
+    const sql = `Insert into request_log_group_${idMySelf} (idGroupLog) values ('${idRoom}')`
+    try {
+      await this.excuseQuery(sql)
+    } catch(e){
+      console.log(e)
+      throw e.message
+    }
+
   }
 }
 

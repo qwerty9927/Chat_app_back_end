@@ -61,7 +61,7 @@ class Response {
     }
   }
 
-  async acceptRequestGroup(req, res, next){
+  async acceptRequestGroupToUser(req, res, next){
     const data = req.body
     const idRoom = data.idRoom
     // Bảo vệ route xác thực đúng username
@@ -78,7 +78,7 @@ class Response {
     }
   }
 
-  async refuseRequestGroup(req, res, next){
+  async refuseRequestGroupToUser(req, res, next){
     const data = req.body
     // Bảo vệ route xác thực đúng username
     data.mySelf.Username = req.username

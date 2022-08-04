@@ -70,8 +70,20 @@ class UserModel extends DB {
 
   async createTableRequestLog(id){
     const sql = `CREATE TABLE request_log_${id} (
-      idUserLog varchar(20) NOT NULL PRIMARY KEY,
-      Type varchar(10)
+      idUserLog varchar(20) NOT NULL PRIMARY KEY
+    )`
+    try{
+      await this.excuseQuery(sql)
+      return true
+    }catch(e){
+      console.log(e)
+      throw e.message
+    }
+  }
+
+  async createTableRequestLogGroup(id){
+    const sql = `CREATE TABLE request_log_group_${id} (
+      idGroupLog varchar(50) NOT NULL PRIMARY KEY
     )`
     try{
       await this.excuseQuery(sql)

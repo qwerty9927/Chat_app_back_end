@@ -35,8 +35,8 @@ class Request {
     // Bảo vệ route xác thực đúng username
     data.mySelf.Username = req.username
     try{
-      await RequestModel.addToMailRequestModel(data.mySelf, data.friend.Username)
-      await RequestModel.addRequestToLogOfUserModel(data.mySelf.Username, data.friend.Username)
+      await RequestModel.addRequestToMailModel(data.mySelf, data.friend.Username)
+      await RequestModel.addRequestToMyLogUserModel(data.mySelf.Username, data.friend.Username)
       res.sendStatus(200)
     } catch(e){
       next(createError.InternalServerError())
@@ -48,8 +48,21 @@ class Request {
     // Bảo vệ route xác thực đúng username
     data.mySelf.Username = req.username
     try{
-      await RequestModel.addToMailRequestGroupModel(data.mySelf.Username, data.friend.Username, data.group, data.idRoom)
-      await RequestModel.addRequestToLogOfGroupModel(data.mySelf.Username, data.friend, data.idRoom)
+      await RequestModel.addInvitationToMailModel(data.mySelf.Username, data.friend.Username, data.group, data.idRoom)
+      await RequestModel.addInvitationToLogOfGroupModel(data.mySelf.Username, data.friend, data.idRoom)
+      res.sendStatus(200)
+    } catch(e){
+      next(createError.InternalServerError())
+    }
+  }
+
+  async sendRequestToGroup(req, res, next){
+    const data = req.body
+    // Bảo vệ route xác thực đúng username
+    data.mySelf.Username = req.username
+    try {
+      await RequestModel.addRequestToMailGroupModel(data.mySelf, data.message, data.idRoom)
+      await RequestModel.addRequestToMyLogGroupModel(data.mySelf.Username, data.idRoom)
       res.sendStatus(200)
     } catch(e){
       next(createError.InternalServerError())

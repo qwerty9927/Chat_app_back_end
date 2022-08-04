@@ -19,9 +19,9 @@ router.post('/acceptRequestUser', Response.acceptRequestUser)
 router.delete('/refuseRequestUser', Response.refuseRequestUser)
 
 // Post user accepted into group
-router.post('/acceptRequestGroup', Response.acceptRequestGroup)
+router.post('/acceptRequestGroupToUser', Response.acceptRequestGroupToUser)
 
 // Delete request sender in mail request
-router.delete('/refuseRequestGroup', Response.refuseRequestGroup)
+router.delete('/refuseRequestGroupToUser', Response.refuseRequestGroupToUser)
 
 module.exports = router
