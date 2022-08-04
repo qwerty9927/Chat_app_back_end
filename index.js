@@ -9,8 +9,10 @@ const routerAdmin = require('./src/routes/admin.route')
 const routerUser = require('./src/routes/user.route')
 const routerSearch = require('./src/routes/search.route')
 const routerChat = require('./src/routes/chat.route')
+const routerGroup = require('./src/routes/group.route')
+const routerRequest = require('./src/routes/request.route')
+const routerResponse = require('./src/routes/response.route')
 const ServiceChat = require('./src/services/Chat.service')
-const verifyToken = require('./src/middleware/verifyToken')
 
 dotenv.config()
 const app = express()
@@ -32,12 +34,14 @@ app.use(cors({
 }))
 app.use(cookieParser())
 app.use('/auth', routerAuth)
-app.use(verifyToken) //middleware check token is exist
 app.use('/chat', routerChat)
 global._io.on("connection", ServiceChat.connect)
 
 app.use('/admin', routerAdmin)
+app.use('/request', routerRequest)
+app.use('/response', routerResponse)
 app.use('/user', routerUser)
+app.use('/group', routerGroup)
 app.use('/search', routerSearch)
 
 app.use((req, res) => {

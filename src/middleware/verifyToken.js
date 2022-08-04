@@ -1,4 +1,6 @@
 const jwt = require('jsonwebtoken')
+const createError = require('http-errors')
+
 function verifyToken(req, res, next) {
   if(req.headers.authorization !== undefined){
     const [schema, token] = req.headers.authorization.split(' ')
@@ -7,11 +9,11 @@ function verifyToken(req, res, next) {
         req.username = data.username
         next()
       } else {
-        res.sendStatus(401)
+        next(createError.Unauthorized())
       }
     })
   } else {
-    res.sendStatus(401)
+    next(createError.Unauthorized())
   }
 }
 

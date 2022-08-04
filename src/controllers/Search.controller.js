@@ -1,75 +1,107 @@
+const createError = require('http-errors')
 const SearchModel = require('../models/Search.model')
 class Search{
 
-  async searchUserToChat(req, res){
+  async searchFriendToChat(req, res, next){
     const idCurrentUser = req.username
     const searchValue = req.query.searchValue
     const page = req.query.page
     const quantity = req.query.quantity
-    try{
-      const result = await SearchModel.findUserToChat(idCurrentUser, searchValue, page, quantity)
-      res.status(200).json(result)
-    }catch(e){
-      res.sendStatus(500)
+    if(searchValue && page && quantity){
+      try{
+        const result = await SearchModel.searchFriendToChatModel(idCurrentUser, searchValue, page, quantity)
+        res.status(200).json(result)
+      }catch(e){
+        console.log(e)
+        next(createError.InternalServerError())
+      }
+    } else {
+      next(createError.UnprocessableEntity())
     }
   }
 
-  async quantityUserToChatFound(req, res){
+  async quantityFriendToChat(req, res, next){
     const idCurrentUser = req.username
     const searchValue = req.query.searchValue
-    try{
-      const result = await SearchModel.quantityUserToChat(idCurrentUser, searchValue)
-      res.status(200).json(result)
-    }catch(e){
-      res.sendStatus(500)
+    if(searchValue){
+      try{
+        const result = await SearchModel.quantityFriendToChatModel(idCurrentUser, searchValue)
+        res.status(200).json(result)
+      }catch(e){
+        console.log(e)
+        next(createError.InternalServerError())
+  
+      }
+    } else {
+      next(createError.UnprocessableEntity())
     }
   }
 
-  async searchUserToAdd(req, res){
-    const idCurrentUser = req.username
-    const searchValue = req.query.searchValue
-    const page = req.query.page
-    const quantity = req.query.quantity
-    try{
-      const result = await SearchModel.findUserToAdd(idCurrentUser, searchValue, page, quantity)
-      res.status(200).json(result)
-    }catch(e){
-      res.sendStatus(500)
-    }
-  }
-
-  async quantityUserToAddFound(req, res){
-    const idCurrentUser = req.username
-    const searchValue = req.query.searchValue
-    try{
-      const result = await SearchModel.quantityUserToAdd(idCurrentUser, searchValue)
-      res.status(200).json(result)
-    }catch(e){
-      res.sendStatus(500)
-    }
-  }
-
-  async searchUserInRequestBox(req, res){
+  async searchUserToAdd(req, res, next){
     const idCurrentUser = req.username
     const searchValue = req.query.searchValue
     const page = req.query.page
     const quantity = req.query.quantity
-    try{
-      const result = await SearchModel.findUserInRequestBox(idCurrentUser, searchValue, page, quantity)
-      res.status(200).json(result)
-    }catch(e){
-      res.sendStatus(500)
+    if(searchValue && page && quantity){
+      try{
+        const result = await SearchModel.searchUserToAddModel(idCurrentUser, searchValue, page, quantity)
+        res.status(200).json(result)
+      }catch(e){
+        console.log(e)
+        next(createError.InternalServerError())
+      }
+    } else {
+      next(createError.UnprocessableEntity())
     }
   }
 
-  async quantityRequestFound(req, res){
+  async quantityUserToAdd(req, res, next){
     const idCurrentUser = req.username
     const searchValue = req.query.searchValue
-    try{
-      const result = await SearchModel.quantityRequest(idCurrentUser, searchValue)
-      res.status(200).json(result)
-    }catch(e){
-      res.sendStatus(500)
+    if(searchValue){
+      try{
+        const result = await SearchModel.quantityUserToAddModel(idCurrentUser, searchValue)
+        res.status(200).json(result)
+      }catch(e){
+        console.log(e)
+        next(createError.InternalServerError())
+      }
+    } else {
+      next(createError.UnprocessableEntity())
+    }
+  }
+
+  async searchRequest(req, res, next){
+    const idCurrentUser = req.username
+    const searchValue = req.query.searchValue
+    const page = req.query.page
+    const quantity = req.query.quantity
+    if(searchValue && page && quantity){
+      try{
+        const result = await SearchModel.searchRequestModel(idCurrentUser, searchValue, page, quantity)
+        res.status(200).json(result)
+      }catch(e){
+        console.log(e)
+        next(createError.InternalServerError())
+      }
+    } else {
+      next(createError.UnprocessableEntity())
+    }
+  }
+
+  async quantityRequestFound(req, res, next){
+    const idCurrentUser = req.username
+    const searchValue = req.query.searchValue
+    if(searchValue){
+      try{
+        const result = await SearchModel.quantityRequestModel(idCurrentUser, searchValue)
+        res.status(200).json(result)
+      }catch(e){
+        console.log(e)
+        next(createError.InternalServerError())
+      }
+    } else {
+      next(createError.UnprocessableEntity())
     }
   }
 

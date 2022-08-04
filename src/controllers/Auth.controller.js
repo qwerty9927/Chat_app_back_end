@@ -1,80 +1,75 @@
 const jwt = require('jsonwebtoken')
+const createError = require('http-errors')
 const AuthModel = require('../models/Auth.model')
 const UserModel = require('../models/User.model')
 
 class Auth {
-  async login(req, res) {
-    if (typeof req.body.Username !== 'undefined' && typeof req.body.Password !== 'undefined') {
-      const username = req.body.Username
-      console.log(username)
-      const result = await AuthModel.checkAcc(req.body)
+  async login(req, res, next) {
+    const data = req.body
+    if (data.Username && data.Password) {
+      const result = await AuthModel.checkAcc(data)
       if (result.status) {
-        const accessToken = jwt.sign({ username: username, role: result.role }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 60*10 })
-        const refreshToken = jwt.sign({ username: username, role: result.role }, process.env.REFRESH_ACCESS_TOKEN_SECRET)
-        if(await AuthModel.setToken(username, refreshToken)){
+        const accessToken = jwt.sign({ username: data.Username, role: result.role }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: 60*10 })
+        const refreshToken = jwt.sign({ username: data.Username, role: result.role }, process.env.REFRESH_ACCESS_TOKEN_SECRET)
+        if(await AuthModel.setToken(data.Username, refreshToken)){
           res.cookie("accessToken", accessToken)
           res.cookie("refreshToken", refreshToken)
-          res.status(200).json({ Username: username, Name: result.Name, Image: result.Image})
+          res.status(200).json({ Username: data.Username, Name: result.Name, Image: result.Image})
         } else {
-          res.status(500).send("Error")
+          next(createError.InternalServerError())
         }
       } else {
-        res.sendStatus(401)
+        next(createError.Unauthorized())
       }
     } else {
-      res.sendStatus(422)
+      next(createError.UnprocessableEntity())
     }
   }
 
-  async checkUsername(req, res) {
-    const result = await AuthModel.isUsername(req.body.Username)
-    res.send({ isExist: result })
-  }
-
-  async resgister(req, res) {
-    let accountInfo = req.body
+  async resgister(req, res, next) {
+    let accountInfo = req.body // Username, Password, Name, Image
+    accountInfo.Image = accountInfo.Image || "defaultImage.png"
     try{
-      if(!accountInfo.Image){
-        accountInfo.Image = "defaultImage.png"
-      }
       await AuthModel.createAcc(accountInfo)
       await UserModel.createTableFriend(accountInfo.Username)
       await UserModel.createTableRequest(accountInfo.Username)
+      await UserModel.createTableRequestGroup(accountInfo.Username)
+      await UserModel.createTableResponse(accountInfo.Username)
       await UserModel.createTableGroupOfUser(accountInfo.Username)
       await UserModel.createTableRequestLog(accountInfo.Username)
+      await UserModel.createTableRequestLogGroup(accountInfo.Username)
       res.status(200).send("Success")
-    } catch(e){
-      console.log(e)
-      res.status(500).send("ERROR")
+    } catch(err){
+      next(createError.InternalServerError())
     }
   }
 
   async authenticate(req, res, next) {
-    if (req.body.Username === undefined || req.body.Username === "" || !/^[a-zA-Z0-9]{1,20}$/.test(req.body.Username)) {
-      res.sendStatus(401)
+    const data = req.body
+    if (!data.Username) {
+      next(createError.UnprocessableEntity())
       return false
-    } else if (await AuthModel.isUsername(req.body.Username)) {
-      res.sendStatus(401)
-      return false
-    }
-
-    if (typeof req.body.Password === 'undefined' || req.body.Password === "" || !/^[a-zA-Z0-9]{8,20}$/.test(req.body.Password)) {
-      res.sendStatus(401)
+    } else if (await AuthModel.isUsername(data.Username)) {
+      next(createError.Conflict())
       return false
     }
 
-    if (typeof req.body.Name === 'undefined' || req.body.Name === "" || !/^[a-zvxyỳọáầảấờễàạằệếýộậốũứĩõúữịỗìềểẩớặòùồợãụủíỹắẫựỉỏừỷởóéửỵẳẹèẽổẵẻỡơôưăêâđA-Z0-9]{1,20}$/.test(req.body.Name)) {
-      res.sendStatus(401)
+    if (/^.{0,7}$/.test(data.Password)) {
+      next(createError.UnprocessableEntity())
       return false
     }
 
+    if (!data.Name) {
+      next(createError.UnprocessableEntity())
+      return false
+    }
     next()
   }
 
-  refreshToken(req, res) {
+  refreshToken(req, res, next) {
     const token = req.cookies.refreshToken
     console.log("RefreshToke: ", token)
-    if (token !== undefined) {
+    if (token) {
       jwt.verify(token, process.env.REFRESH_ACCESS_TOKEN_SECRET, async (err, data) => {
         if (data) {
           const refreshTokenInStore = await AuthModel.getToken(data.username)
@@ -83,31 +78,31 @@ class Auth {
             res.cookie("accessToken", accessToken)
             res.status(200).send("Success")
           } else {
-            res.status(403).send("Failed")
+            next(createError.Unauthorized())
           }
         } else {
-          res.status(403).send("Failed")
+          next(createError.Unauthorized())
         }
       })
     } else {
-      res.status(403).send("Failed")
+      next(createError.Unauthorized())
     }
   }
 
-  logout(req, res) {
+  async logout(req, res, next) {
     const token = req.cookies.refreshToken
-    if(token !== undefined){
+    if(token){
       jwt.verify(token, process.env.REFRESH_ACCESS_TOKEN_SECRET, async (err, data) => {
         if(data && await AuthModel.delToken(data.username)){
           res.cookie("accessToken", "")
           res.cookie("refreshToken", "")
           res.status(200).send("Logout done")
         } else {
-          res.status(403).send("Failed")
+          next(createError.Unauthorized())
         }
       })
     } else {
-      res.status(403).send("Failed")
+      next(createError.Unauthorized())
     }
   }
 }
