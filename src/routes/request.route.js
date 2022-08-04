@@ -15,7 +15,10 @@ router.get('/quantityListRequest', Request.getQuantityListRequest)
 // Send request to purpose user
 router.post('/sendRequestUser', Request.sendRequestUser)
 
-// Send request to friend invited in group
+// Send invitation to friend 
 router.post('/sendInvitationGroup', Request.sendInvitationGroup)
+
+// Send request to group
+router.post('/sendRequestToGroup', Request.sendRequestToGroup)
 
 module.exports = router

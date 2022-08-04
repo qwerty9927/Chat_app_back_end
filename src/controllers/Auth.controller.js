@@ -37,6 +37,7 @@ class Auth {
       await UserModel.createTableResponse(accountInfo.Username)
       await UserModel.createTableGroupOfUser(accountInfo.Username)
       await UserModel.createTableRequestLog(accountInfo.Username)
+      await UserModel.createTableRequestLogGroup(accountInfo.Username)
       res.status(200).send("Success")
     } catch(err){
       next(createError.InternalServerError())
