@@ -13,9 +13,10 @@ class Group {
       await GroupModel.createGroup(data.group.Name, data.group.Image, data.mySelf.Username, idRoom)
       await GroupModel.createTableGroupMember(idRoom)
       await GroupModel.createTableGroupMail(idRoom)
-      await GroupModel.insertAdminInGroup(data.mySelf, idRoom)
       await GroupModel.createTableGroupLog(idRoom)
       await GroupModel.createTableGroupMessage(idRoom)
+      await GroupModel.insertAdminInGroup(data.mySelf, idRoom)
+      await GroupModel.insertGroupToList(data.group.Name, data.group.Image, idRoom)
       res.sendStatus(200)
     } catch (e){
       next(createError.InternalServerError())

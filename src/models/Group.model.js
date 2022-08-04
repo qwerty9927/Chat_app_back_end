@@ -90,6 +90,17 @@ class GroupModel extends DB{
     }
   }
 
+  async insertGroupToList(group, idMySelf, idRoom){
+    const date = moment().format('YYYY-MM-DD')
+    const sql = `Insert into user_group_${idMySelf} (idRoom, NameGroup, Image, JoinDate) Values ('${idRoom}', '${group.Name}', '${group.Image}', '${date}')`
+    try {
+      await this.excuseQuery(sql)
+    } catch(e){
+      console.log(e)
+      throw e.message
+    }
+  }
+
   async getGroupModel(idCurrentUser){
     const sql = `Select * from user_group_${idCurrentUser}`
     try {
