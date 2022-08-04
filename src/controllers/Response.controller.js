@@ -29,6 +29,8 @@ class Response {
     }
   }
 
+  //User to User
+
   async acceptRequestUser(req, res, next){
     const data = req.body
     const idRoom = uuidv4().replace(/-/g, "")
@@ -61,6 +63,8 @@ class Response {
     }
   }
 
+  //Group to User
+
   async acceptRequestGroupToUser(req, res, next){
     const data = req.body
     const idRoom = data.idRoom
@@ -86,6 +90,37 @@ class Response {
       await ResponseModel.deleteMailRequestGroup(data.mySelf.Username, data.friend.Username)
       await ResponseModel.deleteGroupLog(data.mySelf.Username, data.idRoom)
       await ResponseModel.sendResponseGroup(data.group, data.mySelf.Username, data.friend.Username, 0)
+      res.sendStatus(200)
+    } catch(e){
+      next(createError.InternalServerError())
+    }
+  }
+  
+  //User to Group
+
+  async acceptRequestUserToGroup(req, res, next){
+    const data = req.body
+    const idRoom = data.idRoom
+    // Bảo vệ route xác thực đúng username
+    // data.mySelf.Username = req.username
+    try{
+      await ResponseModel.addGroupToMyUserGroup(data.friend.Username, data.group, idRoom)
+      await ResponseModel.addToListMember(data.friend, idRoom)
+      await ResponseModel.deleteRequestLogGroup(data.friend.Username, idRoom)
+      await ResponseModel.deleteGroupMail(data.friend.Username, idRoom)
+      res.sendStatus(200)
+    } catch(e){
+      next(createError.InternalServerError())
+    }
+  }
+
+  async refuseRequestUserToGroup(req, res, next){
+    const data = req.body
+    // Bảo vệ route xác thực đúng username
+    // data.mySelf.Username = req.username
+    try {
+      await ResponseModel.deleteRequestLogGroup(data.friend.Username, data.idRoom)
+      await ResponseModel.deleteGroupMail(data.friend.Username, data.idRoom)
       res.sendStatus(200)
     } catch(e){
       next(createError.InternalServerError())

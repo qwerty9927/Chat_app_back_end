@@ -99,9 +99,9 @@ class ResponseModel extends DB {
     }
   }
 
-  async addGroupToMyUserGroup(idMySelf, group, idRoom){
+  async addGroupToMyUserGroup(idOfFriend, group, idRoom){
     const date = moment().format('YYYY-MM-DD')
-    const sql = `Insert into user_group_${idMySelf} (idRoom, NameGroup, Image, JoinDate) Values ('${idRoom}', '${group.Name}', '${group.Image}', '${date}')`
+    const sql = `Insert into user_group_${idOfFriend} (idRoom, NameGroup, Image, JoinDate) Values ('${idRoom}', '${group.Name}', '${group.Image}', '${date}')`
     try{
       await this.excuseQuery(sql)
     } catch(e){
@@ -110,8 +110,8 @@ class ResponseModel extends DB {
     }
   }
 
-  async addToListMember(mySelf, idRoom){
-    const sql = `Insert into list_member_${idRoom} (idMember, NameMember, Image, Role, Status) Values ('${mySelf.Username}', '${mySelf.Name}', '${mySelf.Image}', 0, 1)`
+  async addToListMember(friend, idRoom){
+    const sql = `Insert into list_member_${idRoom} (idMember, NameMember, Image, Role, Status) Values ('${friend.Username}', '${friend.Name}', '${friend.Image}', 0, 1)`
     try{
       await this.excuseQuery(sql)
     } catch(e){
@@ -132,6 +132,27 @@ class ResponseModel extends DB {
   
   async deleteGroupLog(idCurrentUser, idRoom){
     const sql = `Delete from group_log_${idRoom} where idUserInvited = '${idCurrentUser}'`
+    try{
+      await this.excuseQuery(sql)
+    } catch(e){
+      console.log(e)
+      throw e.message
+    }
+  }
+
+  // User To Group
+  async deleteRequestLogGroup(idMySelf, idRoom){
+    const sql = `Delete from request_log_group_${idMySelf} where idGroupLog = "${idRoom}"`
+    try{
+      await this.excuseQuery(sql)
+    } catch(e){
+      console.log(e)
+      throw e.message
+    }
+  }
+
+  async deleteGroupMail(idMySelf, idRoom){
+    const sql = `Delete from group_mail_${idRoom} where idUser = "${idMySelf}"`
     try{
       await this.excuseQuery(sql)
     } catch(e){
