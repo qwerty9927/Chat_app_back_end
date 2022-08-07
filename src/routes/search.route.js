@@ -24,4 +24,10 @@ router.get('/request', Search.searchRequest)
 // Quantity request found in main request
 router.get('/quantityRequestFound', Search.quantityRequestFound)
 
+// Search group in groups
+router.get('/searchGroup', Search.searchGroupToAdd)
+
+// Quantity group found in groups
+router.get('/quantityGroupFound', Search.quantityGroupToAdd)
+
 module.exports = router

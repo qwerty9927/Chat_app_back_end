@@ -71,7 +71,7 @@ class GroupModel extends DB{
 
   async createGroup(name, image, admin, idRoom){
     const date = moment().format('YYYY-MM-DD')
-    const sql = `Insert into groups (Name, Image, DateCreate, Admin, IdRoom) Values ('${name}', '${image}', '${date}', '${admin}', '${idRoom}')`
+    const sql = `Insert into groups (idRoom, Name, Image, DateCreate, Admin) Values ('${idRoom}', '${name}', '${image}', '${date}', '${admin}')`
     try {
       await this.excuseQuery(sql)
     } catch(e){

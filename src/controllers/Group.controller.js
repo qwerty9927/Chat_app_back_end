@@ -16,7 +16,7 @@ class Group {
       await GroupModel.createTableGroupLog(idRoom)
       await GroupModel.createTableGroupMessage(idRoom)
       await GroupModel.insertAdminInGroup(data.mySelf, idRoom)
-      await GroupModel.insertGroupToList(data.group.Name, data.group.Image, idRoom)
+      await GroupModel.insertGroupToList(data.group, data.mySelf.Username, idRoom)
       res.sendStatus(200)
     } catch (e){
       next(createError.InternalServerError())
