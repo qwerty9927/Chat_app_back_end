@@ -105,6 +105,40 @@ class Search{
     }
   }
 
+  async searchGroupToAdd(req, res, next){
+    const idCurrentUser = req.username
+    const searchValue = req.query.searchValue
+    const page = req.query.page
+    const quantity = req.query.quantity
+    if(searchValue && page && quantity){
+      try{
+        const result = await SearchModel.searchGroupToAddModel(idCurrentUser, searchValue, page, quantity)
+        res.status(200).json(result)
+      }catch(e){
+        console.log(e)
+        next(createError.InternalServerError())
+      }
+    } else {
+      next(createError.UnprocessableEntity())
+    }
+  }
+
+  async quantityGroupToAdd(req, res, next){
+    const idCurrentUser = req.username
+    const searchValue = req.query.searchValue
+    if(searchValue){
+      try{
+        const result = await SearchModel.quantityGroupToAddModel(idCurrentUser, searchValue)
+        res.status(200).json(result)
+      }catch(e){
+        console.log(e)
+        next(createError.InternalServerError())
+      }
+    } else {
+      next(createError.UnprocessableEntity())
+    }
+  }
+
 }
 
 module.exports = new Search()

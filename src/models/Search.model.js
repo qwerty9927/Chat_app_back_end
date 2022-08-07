@@ -25,7 +25,7 @@ class SearchModel extends DB{
 
   async searchUserToAddModel(idCurrentUser, searchValue, page, quantity){
     const sql = `
-      Select Username, Name, ac.Image, idUserLog, idUser
+      Select Username, Name, ac.Image, idUserLog as inLog, idUser as inMailUser
       From account as ac 
         LEFT join request_log_${idCurrentUser} on ac.Username = idUserLog
         LEFT join mail_request_${idCurrentUser} on ac.Username = idUser
@@ -76,6 +76,46 @@ class SearchModel extends DB{
 
   async quantityRequestModel(idCurrentUser, searchValue){
     const sql = `Select Count(*) as count from mail_request_${idCurrentUser} where NameUserReq like '${searchValue}%'`
+    try{
+      const quantity = (await this.excuseQuery(sql))[0].count
+      return quantity
+    }catch(e){
+      console.log(e)
+      throw e.message
+    }
+  }
+
+  async searchGroupToAddModel(idCurrentUser, searchValue, page, quantity){
+    const sql = `
+      Select gp.idRoom, gp.Name, gp.Image, idGroupLog as inLogGroup, mrg.idRoom as inMailGroup 
+      From groups as gp
+        LEFT join request_log_group_${idCurrentUser} on gp.idRoom = idGroupLog
+        LEFT join mail_request_group_${idCurrentUser} as mrg on gp.idRoom = mrg.idRoom
+      Where gp.idRoom not in (
+        Select idRoom
+        From user_group_${idCurrentUser}
+      ) and gp.Name like '${searchValue}%' Limit ${page*quantity}, ${quantity}
+    `
+    try{
+      const userOfQuery = await this.excuseQuery(sql)
+      return {userOfQuery}
+    }catch(e){
+      console.log(e)
+      throw e.message
+    }
+  }
+
+  async quantityGroupToAddModel(idCurrentUser, searchValue){
+    const sql = `
+      Select Count(*) as count
+      From groups as gp
+        LEFT join request_log_group_${idCurrentUser} on gp.idRoom = idGroupLog
+        LEFT join mail_request_group_${idCurrentUser} as mrg on gp.idRoom = mrg.idRoom
+      Where gp.idRoom not in (
+        Select idRoom
+        From user_group_${idCurrentUser}
+      ) and gp.Name like '${searchValue}%'
+    `
     try{
       const quantity = (await this.excuseQuery(sql))[0].count
       return quantity

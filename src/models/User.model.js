@@ -37,10 +37,10 @@ class UserModel extends DB {
 
   async createTableRequestGroup(id){
     const sql = `CREATE TABLE mail_request_group_${id} (
-      idUser varchar(20) NOT NULL PRIMARY KEY,
+      idRoom varChar(50) NOT NULL PRIMARY KEY,
       NameGroup nVarchar(20),
       ImageGroup varchar(100),
-      idRoom varChar(50)
+      idUserInvite varchar(20)
     )`
     try{
       await this.excuseQuery(sql)

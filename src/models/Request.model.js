@@ -47,7 +47,7 @@ class Request extends DB {
   }
 
   async addInvitationToMailModel(idMySelf, idOfFriend, group, idRoom){
-    const sql = `Insert into mail_request_group_${idOfFriend} (idUser, NameGroup, ImageGroup, idRoom) Values ( '${idMySelf}', '${group.Name}', '${group.Image}', '${idRoom}')`
+    const sql = `Insert into mail_request_group_${idOfFriend} (idRoom, NameGroup, ImageGroup, idUserInvite) Values ('${idRoom}', '${group.Name}', '${group.Image}', '${idMySelf}')`
     try{
       await this.excuseQuery(sql)
     } catch(e){
