@@ -15,7 +15,7 @@ class ChatModel extends DB{
   }
 
   async getMessage(room, page, quantity){
-    const sql = `Select * from ${room} Order by idMessage DESC Limit ${page*quantity}, ${quantity}`
+    const sql = `Select * from friend_message_${room} Order by idMessage DESC Limit ${page*quantity}, ${quantity}`
     try{
       const messageOfQuery = await this.excuseQuery(sql)
       return {messageOfQuery}

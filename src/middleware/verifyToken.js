@@ -9,7 +9,7 @@ function verifyToken(req, res, next) {
         req.username = data.username
         next()
       } else {
-        next(createError.Unauthorized())
+        next(createError.Forbidden())
       }
     })
   } else {

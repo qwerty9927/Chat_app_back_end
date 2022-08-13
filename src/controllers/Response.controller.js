@@ -1,4 +1,5 @@
 const { v4: uuidv4 } = require('uuid')
+const fs = require('fs')
 const createError = require('http-errors')
 const ResponseModel = require("../models/Response.model")
 
@@ -34,9 +35,12 @@ class Response {
   async acceptRequestUser(req, res, next){
     const data = req.body
     const idRoom = uuidv4().replace(/-/g, "")
+    console.log(idRoom)
+    const path = __basedir + `\\public\\uploads\\imgs\\rooms\\${idRoom}`
     // Bảo vệ route xác thực đúng username
     data.mySelf.Username = req.username
     try{
+      fs.mkdirSync(path)
       await ResponseModel.addFriendToMyListFriend(data.mySelf.Username, data.friend, idRoom)
       await ResponseModel.addFriendToYourListFriend(data.mySelf, data.friend.Username, idRoom)
       await ResponseModel.deleteRequestLog(data.mySelf.Username, data.friend.Username)

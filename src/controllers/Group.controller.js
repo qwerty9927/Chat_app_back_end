@@ -1,4 +1,5 @@
 const { v4: uuidv4 } = require('uuid')
+const fs = require('fs')
 const createError = require('http-errors')
 const GroupModel = require('../models/Group.model')
 const RequestModel = require('../models/Request.model')
@@ -7,9 +8,11 @@ class Group {
   async createGroup(req, res, next) {
     const idRoom = uuidv4().replace(/-/g, "")
     const data = req.body
+    const path = __basedir + `\\public\\uploads\\imgs\\rooms\\${idRoom}`
     // Bảo vệ route xác thực đúng username
     data.mySelf.Username = req.username
     try {
+      fs.mkdir(path)
       await GroupModel.createGroup(data.group.Name, data.group.Image, data.mySelf.Username, idRoom)
       await GroupModel.createTableGroupMember(idRoom)
       await GroupModel.createTableGroupMail(idRoom)
