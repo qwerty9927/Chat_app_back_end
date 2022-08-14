@@ -22,7 +22,7 @@ const httpServer = http.createServer(app)
 const PORT = process.env.PORT || 5000
 const io = new Server(httpServer, {
   cors: {
-    origin: "http://localhost:3000"
+    origin: process.env.HOSTACCESS
   },
   maxHttpBufferSize: 1e8
 })
@@ -33,7 +33,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(cors({
   credentials: true,
-  origin: 'http://localhost:3000'
+  origin: process.env.HOSTACCESS
 }))
 app.use(cookieParser())
 app.use('/static', express.static(path.join(__dirname, 'public/uploads')))

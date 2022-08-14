@@ -4,7 +4,7 @@
     <title>Socket.IO chat</title>
   </head>
   <body>
-    <input type="file" name="image">
+    <!-- <input type="file" name="image">
     <button onclick="handleClick()">Upload</button>
     <script>
       function handleClick(){
@@ -15,7 +15,44 @@
           method: "POST",
           body: data
         })
+      } -->
+    <form action="http://localhost:5000/upload/uploadImage" enctype="multipart/form-data" method="POST" id="form" >
+			<input type="file"  name="image" />
+      <input type="submit" value="Upload image">
+		</form>
+    <div>
+
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io()
+      socket.emit("entryRoom", {idRoom: '123'})
+      document.querySelector('input[type="file"]').onchange = function(e){
+        console.log(e.target.files)
+        const file = e.target.files[0]
+        const data = {
+          messageInfo: {
+            idAuthor: "user123",
+            Message: "Xin chao",
+            Image: null,
+            Time: "1234"
+          },
+          idRoom: '123'
+        }
+        socket.emit('sendMessage', data, file, (status) => {
+          console.log(status)
+        })
       }
+      socket.on("receiveMessage", (data, fileInfo) => {
+        document.querySelector('div').innerHTML = `
+          <p>${JSON.stringify(data)}</p>
+          <p>${JSON.stringify(fileInfo)}</p>
+          <video width="320" height="240" controls>
+            <source src="${fileInfo.link}" type="${fileInfo.mime}">
+            Your browser does not support the video tag.
+          </video>
+        `
+      })
     </script>
   </body>
 </html>

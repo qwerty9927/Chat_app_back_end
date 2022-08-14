@@ -1,17 +1,50 @@
+const fs = require("fs")
+const fileType = require('file-type-es5')
 const ChatModel = require("../models/Chat.model")
-
-class ServiceChat{
-  connect(socket){
+const path = '../../public/uploads'
+class ServiceChat {
+  connect(socket) {
     console.log("connect to chat")
     socket.on("entryRoom", (data) => {
-      socket.join("room-" + data.idRoom) 
+      socket.join("room-" + data.idRoom)
     })
 
-    socket.on("sendMessage", async (data) => {
-      try{
+    socket.on("sendMessage", async (data, file, callback) => {
+      // data structure
+      /* 
+        { 
+          messageInfo: {
+            idAuthor: ...,
+            Message: ...,
+            Image: ...,
+            Time: ...
+          },
+          idRoom: ...
+        } 
+      */
+      let fileInfo = null
+      if(file){
+        const path = __basedir + `\\public\\uploads\\media\\rooms\\${data.idRoom}`
+        fileInfo = fileType(file)
+        if(!fileInfo){
+          callback({ message: !fileInfo ? "File not support" : "Upload done" })
+          return 
+        }
+        // create file name
+        const fileName = Date.now() + '-' + Math.round(Math.random() * 1E9) + '.' + `${fileInfo.ext}`
+  
+        // add file name to message
+        data.messageInfo.Image = fileName
+  
+        fs.writeFileSync(path + `\\${fileName}`, file, { flag: 'w' })
+        
+        fileInfo.link = process.env.HOST + `/static/media/rooms/${data.idRoom}/${fileName}`
+      }
+      try {
+        socket.to("room-" + data.idRoom).emit("receiveMessage", data.messageInfo, fileInfo)
         await ChatModel.addMessage(data.idRoom, data.messageInfo)
-        socket.to("room-" + data.idRoom).emit("receiveMessage", data.messageInfo)
-      } catch(e){
+        callback({message: true})
+      } catch (e) {
         console.log(e)
       }
     })
