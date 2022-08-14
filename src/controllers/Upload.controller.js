@@ -1,12 +1,17 @@
 const createError = require('http-errors')
-
+const UploadModel = require('../models/Upload.model')
 class Upload {
-	saveImage(req, res, next) {
+	async saveImage(req, res, next) {
 		const file = req.file
 		if (!file) {
 			next(createError.InternalServerError())
 		} else {
-			res.sendStatus(200)
+			try{
+				await UploadModel.setNameImageForUser(req.username, req.fileName)
+				res.sendStatus(200)
+			} catch(e){
+				next(createError.InternalServerError())
+			}
 		}
 	}
 }
