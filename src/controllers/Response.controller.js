@@ -36,7 +36,7 @@ class Response {
     const data = req.body
     const idRoom = uuidv4().replace(/-/g, "")
     console.log(idRoom)
-    const path = __basedir + `\\public\\uploads\\imgs\\rooms\\${idRoom}`
+    const path = __basedir + `\\public\\uploads\\media\\rooms\\${idRoom}`
     // Bảo vệ route xác thực đúng username
     data.mySelf.Username = req.username
     try{
