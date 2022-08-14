@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken')
+const fs = require('fs')
 const createError = require('http-errors')
 const AuthModel = require('../models/Auth.model')
 const UserModel = require('../models/User.model')
@@ -30,6 +31,7 @@ class Auth {
     let accountInfo = req.body // Username, Password, Name, Image
     accountInfo.Image = accountInfo.Image || "defaultImage.png"
     try{
+      fs.mkdirSync(`./public/uploads/media/users/${accountInfo.Username}`)
       await AuthModel.createAcc(accountInfo)
       await UserModel.createTableFriend(accountInfo.Username)
       await UserModel.createTableRequest(accountInfo.Username)
