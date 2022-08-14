@@ -31,7 +31,7 @@ class Auth {
     let accountInfo = req.body // Username, Password, Name, Image
     accountInfo.Image = accountInfo.Image || "defaultImage.png"
     try{
-      fs.mkdirSync(`./public/uploads/imgs/users/${accountInfo.Username}`)
+      fs.mkdirSync(`./public/uploads/media/users/${accountInfo.Username}`)
       fs.mkdirSync(`./public/uploads/files/users/${accountInfo.Username}`)
       await AuthModel.createAcc(accountInfo)
       await UserModel.createTableFriend(accountInfo.Username)

@@ -9,7 +9,7 @@ const router = express.Router()
 
 const storage = multer.diskStorage({
 	destination: (req, file, cb) => {
-		cb(null, `${__public}\\imgs\\users\\${req.username}`)
+		cb(null, `${__public}\\media\\users\\${req.username}`)
 	},
 	filename: (req, file, cb) => {
 		const filename = Date.now() + '-' + Math.round(Math.random() * 1E9)
