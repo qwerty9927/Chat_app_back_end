@@ -42,6 +42,7 @@ class ServiceChat {
       }
       try {
         socket.to("room-" + data.idRoom).emit("receiveMessage", data.messageInfo, fileInfo)
+        await ChatModel.addMessage(data.idRoom, data.messageInfo)
         callback({message: true})
       } catch (e) {
         console.log(e)
