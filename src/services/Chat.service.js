@@ -24,7 +24,7 @@ class ServiceChat {
       */
       let fileInfo = null
       if(file){
-        const path = __basedir + `\\public\\uploads\\imgs\\rooms\\${data.idRoom}`
+        const path = __basedir + `\\public\\uploads\\media\\rooms\\${data.idRoom}`
         fileInfo = fileType(file)
         if(!fileInfo){
           callback({ message: !fileInfo ? "File not support" : "Upload done" })
@@ -38,7 +38,7 @@ class ServiceChat {
   
         fs.writeFileSync(path + `\\${fileName}`, file, { flag: 'w' })
         
-        fileInfo.link = process.env.HOST + `/static/imgs/rooms/${data.idRoom}/${fileName}`
+        fileInfo.link = process.env.HOST + `/static/media/rooms/${data.idRoom}/${fileName}`
       }
       try {
         socket.to("room-" + data.idRoom).emit("receiveMessage", data.messageInfo, fileInfo)

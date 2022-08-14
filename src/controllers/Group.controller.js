@@ -8,7 +8,7 @@ class Group {
   async createGroup(req, res, next) {
     const idRoom = uuidv4().replace(/-/g, "")
     const data = req.body
-    const path = __basedir + `\\public\\uploads\\imgs\\rooms\\${idRoom}`
+    const path = __basedir + `\\public\\uploads\\media\\rooms\\${idRoom}`
     // Bảo vệ route xác thực đúng username
     data.mySelf.Username = req.username
     try {
