@@ -11,7 +11,6 @@
     <div>
 
     </div>
-    <img src="./static/imgs/Screenshot 2022-08-10 095056.png" alt="">
     <script src="/socket.io/socket.io.js"></script>
     <script>
       const socket = io()
@@ -32,11 +31,14 @@
           console.log(status)
         })
       }
-      socket.on("receiveMessage", (data, linkFile) => {
-        // console.log()
+      socket.on("receiveMessage", (data, fileInfo) => {
         document.querySelector('div').innerHTML = `
           <p>${JSON.stringify(data)}</p>
-          <p>${linkFile}</p>
+          <p>${JSON.stringify(fileInfo)}</p>
+          <video width="320" height="240" controls>
+            <source src="${fileInfo.link}" type="${fileInfo.mime}">
+            Your browser does not support the video tag.
+          </video>
         `
       })
     </script>
