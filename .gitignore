@@ -1,5 +1,3 @@
 /node_modules
 /public
-test.js
-index.html
-socket.js
+*.html
