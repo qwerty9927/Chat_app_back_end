@@ -12,7 +12,7 @@ class Group {
     // Bảo vệ route xác thực đúng username
     data.mySelf.Username = req.username
     try {
-      fs.mkdir(path)
+      fs.mkdirSync(path)
       await GroupModel.createGroup(data.group.Name, data.group.Image, data.mySelf.Username, idRoom)
       await GroupModel.createTableGroupMember(idRoom)
       await GroupModel.createTableGroupMail(idRoom)
