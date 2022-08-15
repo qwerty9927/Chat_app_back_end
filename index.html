@@ -4,6 +4,18 @@
     <title>Socket.IO chat</title>
   </head>
   <body>
+    <!-- <input type="file" name="image">
+    <button onclick="handleClick()">Upload</button>
+    <script>
+      function handleClick(){
+        const file = document.querySelector("input").files[0]
+        const data = new FormData()
+        data.append('image', file)
+        fetch("http://localhost:5000/upload/uploadImage", {
+          method: "POST",
+          body: data
+        })
+      } -->
     <form action="http://localhost:5000/upload/uploadImage" enctype="multipart/form-data" method="POST" id="form" >
 			<input type="file"  name="image" />
       <input type="submit" value="Upload image">
