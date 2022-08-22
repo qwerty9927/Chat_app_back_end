@@ -3,7 +3,7 @@ const DB = require("./DB.model")
 class ChatModel extends DB{
   async addMessage(room, message){
     try{
-      const sql = `Insert into ${room} 
+      const sql = `Insert into friend_message_${room} 
         (idAuthor, Message, Image, Time) 
         Values ('${message.idAuthor}', '${message.Message}', '${message.Image}', '${message.Time}')`
       await this.excuseQuery(sql)
