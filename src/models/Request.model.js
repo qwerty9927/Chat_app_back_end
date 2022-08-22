@@ -16,7 +16,7 @@ class Request extends DB {
     }
   }
 
-  async getQuantityRequest(idCurrentUser){
+  async getQuantityRequestModel(idCurrentUser){
     try{
       const quantity = (await this.select(`mail_request_${idCurrentUser}`, "Count(*) as count"))[0].count
       return quantity

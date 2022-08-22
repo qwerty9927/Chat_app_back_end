@@ -53,7 +53,8 @@ class UserModel extends DB {
 
   async createTableResponse(id){
     const sql = `CREATE TABLE mail_response_${id} (
-      idUser varchar(20) NOT NULL PRIMARY KEY ,
+      id int(10) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+      idUser varchar(20),
       NameRes nVarchar(20),
       Image varchar(100), 
       Type varchar(10),
